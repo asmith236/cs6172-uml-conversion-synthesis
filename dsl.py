@@ -405,7 +405,7 @@ class Union(Expression):
         return sum( member.version_space_size() for member in self.members )
     
 class XMLTag(Expression):
-    return_type = "xml"
+    return_type = "ET"
     argument_types = []
 
     def __init__(self, name, attributes=None, children=None):
@@ -422,61 +422,21 @@ class XMLTag(Expression):
         return f'<{self.name} {attributes_str}>{children_str}</{self.name}>'
 
     def evaluate(self, environment):
-        return {
-            "name": self.name,
-            "attributes": {key: value.evaluate(environment) for key, value in self.attributes.items()},
-            "children": [child.evaluate(environment) for child in self.children]
-        }
-
-    def version_space_size(self):
-        # compute version space size for attributes and children
-        attribute_space_size = 1
-        for value in self.attributes.values():
-            attribute_space_size *= value.version_space_size()
-
-        child_space_size = 1
+        """
+        Convert to an ET.Element.
+        """
+        element = ET.Element(
+            self.name,
+            {key: value.evaluate(environment) for key, value in self.attributes.items()}
+        )
         for child in self.children:
-            child_space_size *= child.version_space_size()
+            child_result = child.evaluate(environment)
+            if child_result.tag == "content":  # Special handling for text content
+                element.text = child_result.text
+            else:
+                element.append(child_result)
+        return element
 
-        return attribute_space_size * child_space_size
-    
-    def extension(self):
-        # gen all combinations of attribute extensions
-        attribute_combinations = [{}]
-        for key, value in self.attributes.items():
-            attribute_extensions = value.extension()
-            attribute_combinations = [
-                {**combo, key: ext}
-                for combo in attribute_combinations
-                for ext in attribute_extensions
-            ]
-
-        # gen all combinations of child extensions
-        child_combinations = [[]]
-        for child in self.children:
-            child_extensions = child.extension()
-            child_combinations = [
-                combo + [ext]
-                for combo in child_combinations
-                for ext in child_extensions
-            ]
-
-        # combine attributes and children into full extensions
-        return [
-            XMLTag(self.name, attributes=attributes, children=children)
-            for attributes in attribute_combinations
-            for children in child_combinations
-        ]
-    
-    def minimum_cost_member_of_extension(self):
-        # find minimum-cost members for attribs and children
-        min_attributes = {key: value.minimum_cost_member_of_extension() for key, value in self.attributes.items()}
-        min_children = [child.minimum_cost_member_of_extension() for child in self.children]
-        return XMLTag(self.name, attributes=min_attributes, children=min_children)
-    
-    def arguments(self):
-        # combine atrib vals and children into single list
-        return list(self.attributes.values()) + self.children
 
 class XMLAttribute(Expression):
     return_type = "str"
@@ -490,27 +450,17 @@ class XMLAttribute(Expression):
         return f'XMLAttribute("{self.key}", {self.value})'
 
     def pretty_print(self):
-        return f'{self.key}="{self.value}"'
+        return f'{self.key}="{self.value.pretty_print()}"'
 
     def evaluate(self, environment):
+        """
+        Return the attribute value as a string.
+        """
         return self.value.evaluate(environment)
-    
-    def version_space_size(self):
-        return self.value.version_space_size()
-    
-    def extension(self):
-        return [XMLAttribute(self.key, ext) for ext in self.value.extension()]
-    
-    def minimum_cost_member_of_extension(self):
-        # find min cost member of le value
-        min_value = self.value.minimum_cost_member_of_extension()
-        return XMLAttribute(self.key, min_value)
-    
-    def arguments(self):
-        return [self.value]
+
 
 class XMLContent(Expression):
-    return_type = "str"
+    return_type = "ET"
     argument_types = []
 
     def __init__(self, content):
@@ -523,8 +473,14 @@ class XMLContent(Expression):
         return self.content
 
     def evaluate(self, environment):
-        return self.content
-    
+        """
+        Wrap the content in an ET.Element with text.
+        """
+        # Create a placeholder element to hold the text content
+        element = ET.Element("content")  # Tag "content" is arbitrary; it's a wrapper
+        element.text = self.content
+        return element
+
     def version_space_size(self):
         return 1
     
@@ -532,11 +488,9 @@ class XMLContent(Expression):
         return [self]
     
     def minimum_cost_member_of_extension(self):
-        # static
         return self
     
     def arguments(self):
-        # no nested content
         return []
 
 def parse_xml_to_dsl(xml_string):
@@ -561,7 +515,7 @@ def parse_xml_to_dsl(xml_string):
         attributes = {key: ConstantString(value) for key, value in element.attrib.items()}
         children = []
 
-        # Parse child elements and text content
+        # parse child elements and text content
         for child in element:
             children.append(parse_element(child))
         if element.text and element.text.strip():
@@ -569,11 +523,11 @@ def parse_xml_to_dsl(xml_string):
 
         return XMLTag(tag_name, attributes=attributes, children=children)
     try:
-        # Parse the XML string
+        # parse the XML string
         root = ET.fromstring(xml_string)
-        # Clean namespaces
+        # clean namespaces
         strip_namespace(root)
-        # Convert to DSL
+        # convert to DSL
         return parse_element(root)
     except ET.ParseError as e:
         print("Debug: Invalid XML input")
@@ -582,28 +536,35 @@ def parse_xml_to_dsl(xml_string):
 def test_xml_evaluation(verbose=False):
     expressions, ground_truth = [], []
 
-    # test case 1 - basic XMLTag with attributes and no children
+    # Test case 1: Basic XMLTag with attributes and no children
     input = '<example id="1" type="test"/>'
     expressions.append(parse_xml_to_dsl(input))
-    ground_truth.append(lambda: {"name": "example", "attributes": {"id": "1", "type": "test"}, "children": []})
+    def ground_truth1():
+        root = ET.Element("example", {"id": "1", "type": "test"})
+        return root
+    ground_truth.append(ground_truth1)
 
-    # test case 2 - nested XMLTag with attributes and children
+    # Test case 2: Nested XMLTag with attributes and children
     input = '<parent id="1"><child key="value">Content of child</child></parent>'
     expressions.append(parse_xml_to_dsl(input))
-    ground_truth.append(lambda: {
-        "name": "parent",
-        "attributes": {"id": "1"},
-        "children": [
-            {"name": "child", "attributes": {"key": "value"}, "children": ["Content of child"]}
-        ]
-    })
+    def ground_truth2():
+        parent = ET.Element("parent", {"id": "1"})
+        child = ET.SubElement(parent, "child", {"key": "value"})
+        child.text = "Content of child"
+        return parent
+    ground_truth.append(ground_truth2)
 
-    # test case 3 - XMLContent only
+    # Test case 3: XMLContent wrapped in ET.Element
     input = 'Some text'
-    expressions.append(XMLContent(input))  # XMLContent doesn't require parsing for plain text
-    ground_truth.append(lambda: "Some text")
+    expressions.append(XMLContent(input))  
+    def ground_truth3():
+        # Wrap the text in an ET.Element with a placeholder tag
+        content = ET.Element("content")
+        content.text = "Some text"
+        return content
+    ground_truth.append(ground_truth3)
 
-    # test case 4 - more complex nested structure
+    # Test case 4: More complex nested structure
     input = '''
         <root root_attr="root_value">
             <level1>
@@ -612,38 +573,40 @@ def test_xml_evaluation(verbose=False):
         </root>
     '''
     expressions.append(parse_xml_to_dsl(input))
-    ground_truth.append(lambda: {
-        "name": "root",
-        "attributes": {"root_attr": "root_value"},
-        "children": [
-            {"name": "level1", "attributes": {}, "children": [
-                {"name": "level2", "attributes": {"level2_attr": "level2_value"}, "children": []}
-            ]}
-        ]
-    })
+    def ground_truth4():
+        root = ET.Element("root", {"root_attr": "root_value"})
+        level1 = ET.SubElement(root, "level1")
+        ET.SubElement(level1, "level2", {"level2_attr": "level2_value"})
+        return root
+    ground_truth.append(ground_truth4)
 
-    # eval
-    all_correct, num_correct = True, 0
-    for expression, correct_semantics in zip(expressions, ground_truth):
-        this_correct = True
-
-        expected = correct_semantics()
+    # Evaluate
+    all_correct = True
+    for i, (expression, ground_truth_fn) in enumerate(zip(expressions, ground_truth)):
+        expected = ground_truth_fn()
         result = expression.evaluate({})
-        if result != expected:
-            this_correct = False
+        if isinstance(result, ET.Element):
+            # Compare ET.Elements using string serialization
+            result_str = ET.tostring(result, encoding='unicode')
+            expected_str = ET.tostring(expected, encoding='unicode')
+            this_correct = result_str == expected_str
+        else:
+            # For XMLContent and other simple cases
+            this_correct = result == expected
 
         if not this_correct:
+            all_correct = False
             if verbose:
-                print("Problem with evaluation for expression:")
-                print(expression)
-                print("Expected:", expected)
-                print("Got:", result)
-        all_correct = all_correct and this_correct
-        num_correct += int(this_correct)
+                print(f"Test case {i+1} failed:")
+                print(f"Expected: {ET.tostring(expected, encoding='unicode') if isinstance(expected, ET.Element) else expected}")
+                print(f"Got: {ET.tostring(result, encoding='unicode') if isinstance(result, ET.Element) else result}")
 
-    print(f" [+] XML evaluation, +{num_correct}/{len(expressions)} points")
-
-    return num_correct
+    if all_correct:
+        print("[+] All XML evaluation test cases passed!")
+    else:
+        print("[-] Some test cases failed.")
 
 if __name__ == "__main__":
     test_xml_evaluation(verbose=True)
+
+

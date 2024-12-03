@@ -1,0 +1,82 @@
+------ TODO ------
+
+1. Write python script that anonymizes an input XML file
+2. Execute summer conversion script on anonymized data file to generate known output
+3. Establish test cases
+4. Test various implementations on test cases and output a graph showing which implementations failed/succeeded at each test case
+
+Implementations to test...
+1. HW 1 Flashfill
+2. LLM (inputs-outputs -> code)
+3. LLM (inputs-outputs -> new input-output)
+4. Bottom up enumeration
+5. Advanced Flashfill
+
+
+------ Notes from Prof ------
+
+It would be valuable (and easy) to also try using LLMs in one of two ways:
+
+1. Prompting them with input-outputs and asking them to write the code that will accomplish the transformation
+2. Prompting them with input-outputs, plus a test input that you would like to transform, and asking them to predict what the transformed output should be for that test input
+
+
+------ Notes for Report ------
+
+** Test Success = Output file imports into MagicDraw
+
+1. Tests on hw1 flashfill()...
+   Test case 1 fails - outputs "ran synthesizer in time 7.433286905288696 seconds", but fails to output the version space size and the viable program after 30 mins (likely due to the version space being too large)
+   Test case 2 fails - ...
+
+2. Test using LLM...
+
+The task is to convert an XML element from version 1 to version 2. Here is an example transformation:
+
+Input:
+<ownedComment xmi:id="_0-3eYuRbEduVs91jndUPVw" annotatedElement="_383AC7D3023A40C0CE87009D">
+  <body>This is body gemonies d4143d60.</body>
+</ownedComment>
+
+Output:
+<ownedComment xmi:id="_0-3eYuRbEduVs91jndUPVw" body="This is body gemonies d4143d60." annotatedElement="_383AC7D3023A40C0CE87009D" />
+
+Now, transform the following input XML:
+<Input XML Here>
+
+
+------ Scratch ------
+
+input = '''
+        <root root_attr="root_value">
+            <level1>
+                <body>body text</level2>
+            </level1>
+        </root>
+    '''
+
+output = '''
+        <root root_attr="root_value">
+            <level1 body="body text"/>
+        </root>
+    '''
+
+
+input = ET.Element("root", {"root_attr": "root_value"})
+level1 = ET.SubElement(input, "level1")
+ET.SubElement(level1, "body")
+level1.text = "body text"
+
+output = ET.Element("root", {"root_attr": "root_value"})
+level1 = ET.SubElement(output, "level1", {"body": "body text"})
+
+
+XMLTag witness...
+1. Check whether the tags in the input and output align
+2. Handle the transformation of children and attributes recursively?
+
+XMLAttribute witness...
+1. Map an input attribute value or content to an output attribute ex. no attributes for a tag -> added attributes
+
+XMLContent witness...
+1. Ensure that content matches
