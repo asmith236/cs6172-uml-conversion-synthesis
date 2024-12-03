@@ -2,3 +2,4 @@ __pycache__/
 *.DS_Store
 test_case_synthesis/input.efx
 deprecated/
+bottom_up/outputs.txt

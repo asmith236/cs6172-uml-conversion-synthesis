@@ -64,19 +64,62 @@ output = '''
 
 input = ET.Element("root", {"root_attr": "root_value"})
 level1 = ET.SubElement(input, "level1")
-ET.SubElement(level1, "body")
-level1.text = "body text"
+body = ET.SubElement(level1, "body")
+body.text = "body text"
 
 output = ET.Element("root", {"root_attr": "root_value"})
 level1 = ET.SubElement(output, "level1", {"body": "body text"})
 
+XMLTag(level, tag, attribute_list, content)...
+XMLTag(1, "root", [("root_attr", "root_value")], none) + XMLTag(2, "level1", none, none) + XMLTag(3, "body", none, "body text")
 
-XMLTag witness...
-1. Check whether the tags in the input and output align
-2. Handle the transformation of children and attributes recursively?
+XMLTag(tag, attribute_list, content, child)...
+XMLTag("root", [("root_attr", "root_value")], none, XMLTag("level1", none, none, XMLTag("body", none, "body text", none)))
+XMLTag("root", [("root_attr", "root_value")], none, XMLTag("level1", [("body", "body text")], none, none))
 
-XMLAttribute witness...
-1. Map an input attribute value or content to an output attribute ex. no attributes for a tag -> added attributes
+XMLTag(tag, attribute_list, content, child)...
+ConstantString("text")...
+XMLTag(ConstantString("root"), [(ConstantString("root_attr"), ConstantString("root_value"))], none, XMLTag(ConstantString("level1"), none, none, XMLTag(ConstantString("body"), none, ConstantString("body text"), none)))
+XMLTag(ConstantString("root"), [(ConstantString("root_attr"), ConstantString("root_value"))], none, XMLTag(ConstantString("level1"), [(ConstantString("body"), ConstantString("body text"))], none, none))
 
-XMLContent witness...
-1. Ensure that content matches
+XMLTag(ConstantString("packagedElement"), [(ConstantString("name"), ConstantString("Name1"))], none, XMLTag(ConstantString("ownedAttribute"), none, none, XMLTag(ConstantString("body"), none, ConstantString("This is content."), none)))
+XMLTag(ConstantString("packagedElement"), [(ConstantString("name"), ConstantString("Name1"))], none, XMLTag(ConstantString("ownedAttribute"), [(ConstantString("body"), ConstantString("This is content."))], none, none))
+
+
+XMLTag
+ConstantString
+
+
+
+
+Generated Program: SetAttribute(
+    ExtractChild(
+        XMLTag(ConstantString("root"),
+               [(ConstantString("root_attr"), ConstantString("root_value"))],
+               None,
+               [XMLTag(ConstantString("level1"), None, None,
+                       [XMLTag(ConstantString("body"), None, ConstantString("body text"), None)])]),
+        ConstantString("level1")
+    ),
+    ConstantString("body"),
+    ExtractAttribute(
+        ExtractChild(
+            ExtractChild(
+                XMLTag(ConstantString("root"),
+                       [(ConstantString("root_attr"), ConstantString("root_value"))],
+                       None,
+                       [XMLTag(ConstantString("level1"), None, None,
+                               [XMLTag(ConstantString("body"), None, ConstantString("body text"), None)])]),
+                ConstantString("level1")
+            ),
+            ConstantString("body")
+        ),
+        ConstantString("text")
+    )
+)
+
+
+('{"attributes": {"body": "body text"}, "children": [], "tag": "root", "text": null}',)
+
+
+('{"attributes": {}, "children": [{"attributes": {}, "children": [], "tag": "body", "text": "body text"}], "tag": "root", "text": null}',)
