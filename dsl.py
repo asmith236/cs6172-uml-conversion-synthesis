@@ -1,3 +1,5 @@
+import xml.etree.ElementTree as ET
+
 class Expression():
 
     def evaluate(self, environment):
@@ -387,6 +389,46 @@ def test_evaluation(verbose=False):
 
     print(f" [+] XML DSL evaluation, +{num_correct}/{len(expressions)} points")
     return num_correct
+
+def xml_to_dsl(xml_string):
+    """
+    Converts an XML string into a DSL representation using XMLTag and ConstantString.
+    Wraps all attribute keys in quotes to prevent namespace prefixes from being identified by ElementTree.
+    """
+
+    def parse_element(element):
+        """
+        Recursively parses an ElementTree element into a DSL XMLTag.
+        """
+        # Extract the tag
+        tag = ConstantString(element.tag)
+        
+        # Extract attributes
+        attributes = [
+            (ConstantString(k), ConstantString(v))
+            for k, v in element.attrib.items()
+        ]
+        
+        # Extract text content
+        text = ConstantString(element.text.strip()) if element.text and element.text.strip() else None
+        
+        # Recursively parse child elements
+        children = None
+        child_elements = list(element)
+        if len(child_elements) == 1:
+            children = parse_element(child_elements[0])
+        elif len(child_elements) > 1:
+            raise ValueError("XMLTag in DSL only supports a single child.")
+        
+        # Construct and return the XMLTag
+        return XMLTag(tag, attributes, text, children)
+    
+    # Parse the XML string
+    root_element = ET.fromstring(xml_string)
+    parsed_dsl = parse_element(root_element)
+    
+    # Capitalize 'none' in the DSL object
+    return parsed_dsl
 
 if __name__ == "__main__":
     test_evaluation(verbose=True)

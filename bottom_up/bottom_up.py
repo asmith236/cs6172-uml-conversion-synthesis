@@ -1,9 +1,12 @@
+
 import itertools
 import json
 import sys
 import os
+import time
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from dsl import *
+from test_cases import *
 
 # suggested first thing: variables and constants should be treated the same, because they are both leaves in syntax trees
 # after computing `variables_and_constants`, you should no longer refer to `constants`. express everything in terms of `variables_and_constants`
@@ -109,7 +112,7 @@ def bottom_up_xml(global_bound, operators, input_outputs):
     input_outputs: List of input-output XML pairs.
     """
     target_outputs = tuple(json.dumps(output.evaluate({}), sort_keys=True) for _, output in input_outputs)
-    print(target_outputs)
+    # print(target_outputs)
 
     with open("outputs.txt", "w") as o_file:
         with open("programs.txt", "w") as p_file:
@@ -123,24 +126,90 @@ def bottom_up_xml(global_bound, operators, input_outputs):
                     return expr
     return None
 
+def test_bottom_up_xml(verbose=False):
+    operators = [
+        ExtractTag, ExtractAttribute, ExtractText, ExtractChild, SetTag, SetAttribute, SetChild
+    ]
+    
+    # Test cases: input-output specifications for XML
+    test_cases = []
+    
+    # Test cases
+    # test_cases.append([({"input1": xml_to_dsl(input1)}, xml_to_dsl(output1))])
+    # test_cases.append([({"input1": xml_to_dsl(input2)}, xml_to_dsl(output2))])
+    # test_cases.append([({"input1": xml_to_dsl(input3)}, xml_to_dsl(output3))])
+    # test_cases.append([({"input1": xml_to_dsl(input4)}, xml_to_dsl(output4))])
+    # test_cases.append([({"input1": xml_to_dsl(input5)}, xml_to_dsl(output5))])
+    # test_cases.append([({"input1": xml_to_dsl(input6)}, xml_to_dsl(output6))])
+    # test_cases.append([({"input1": xml_to_dsl(input7)}, xml_to_dsl(output7))])
+    # test_cases.append([({"input1": xml_to_dsl(input8)}, xml_to_dsl(output8))])
+
+    test_cases.append(test_case_1)
+    test_cases.append(test_case_2)
+    test_cases.append(test_case_3)
+    test_cases.append(test_case_4)
+    test_cases.append(test_case_5)
+
+    # Points for each test case
+    how_many_points = [1, 1, 1, 1, 1]
+    
+    # Optimal sizes for each test case
+    optimal_sizes = [15, 20, 20, 20, 20]
+    
+    total_points = 0
+    
+    for test_case, optimal_size, pt in zip(test_cases, optimal_sizes, how_many_points):
+        print("\n")
+        start_time = time.time()
+        program = bottom_up_xml(optimal_size, operators, test_case)
+        if program is None:
+            if verbose:
+                print(f"Failed to synthesize a program with size bound {optimal_size}. \nTest case: {test_case}")
+            continue
+
+        if verbose:
+            print(f"Synthesized program:\t{program} in {time.time() - start_time:.4f} seconds")
+        
+        fails_test_case = False
+        for inputs, expected_output in test_case:
+            output = program.evaluate(inputs)
+            if output != expected_output.evaluate({}):
+                if verbose:
+                    print(f"Synthesized program {program} does not satisfy the test case: {inputs} --> {expected_output}")
+                fails_test_case = True
+            else:
+                if verbose:
+                    print(f"Passes test case: {inputs} --> {expected_output}")
+
+        if fails_test_case:
+            continue
+
+        total_points += pt
+
+    print(f"[+] XML Bottom-Up Synthesis: +{total_points}/{sum(how_many_points)} points")
+    return total_points
+
+if __name__ == "__main__":
+    test_bottom_up_xml(verbose=True)
+
 # input_output_pairs = [
-#     ({"input1": XMLTag(ConstantString("root"), [], None,
-#                         XMLTag(ConstantString("body"), None, ConstantString("body text"), None))}, 
-#     XMLTag(ConstantString("root"), [(ConstantString("body"), ConstantString("body text"))], None, None)
+#     ({"input1": XMLTag(ConstantString("ownedComment"), [], None,
+#                         XMLTag(ConstantString("body"), None, ConstantString("This is body d4143d60."), None))}, 
+#     XMLTag(ConstantString("ownedComment"), [(ConstantString("body"), ConstantString("This is body d4143d60."))], None, None)
 #     )
 # ]
 
-input_output_pairs = [
-    ({"input1": XMLTag(ConstantString("root"), [(ConstantString("root_attr"), ConstantString("root_value"))], None,
-                      XMLTag(ConstantString("level1"), None, None,
-                              XMLTag(ConstantString("body"), None, ConstantString("body text"), None)))},
-     XMLTag(ConstantString("root"), [(ConstantString("root_attr"), ConstantString("root_value"))], None,
-            XMLTag(ConstantString("level1"), [(ConstantString("body"), ConstantString("body text"))], None, None)))
-]
+# input_output_pairs = [
+#     ({"input1": XMLTag(ConstantString("packagedElement"), [(ConstantString("id"), ConstantString("_0-3eYuRbEduVs91jndUPVw"))], None,
+#                       XMLTag(ConstantString("ownedComment"), None, None,
+#                               XMLTag(ConstantString("body"), None, ConstantString("This is body d4143d60."), None)))},
+#      XMLTag(ConstantString("packagedElement"), [(ConstantString("id"), ConstantString("_0-3eYuRbEduVs91jndUPVw"))], None,
+#             XMLTag(ConstantString("ownedComment"), [(ConstantString("body"), ConstantString("This is body d4143d60."))], None, None)))
+# ]
 
-operators = [
-    ExtractTag, ExtractAttribute, ExtractText, ExtractChild, SetTag, SetAttribute, SetChild
-]
+# operators = [
+#     ExtractTag, ExtractAttribute, ExtractText, ExtractChild, SetTag, SetAttribute, SetChild
+# ]
 
-program = bottom_up_xml(20, operators, input_output_pairs)
-print("Generated Program:", program)
+# program = bottom_up_xml(20, operators, input_output_pairs)
+# print("Generated Program:", program)

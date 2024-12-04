@@ -90,47 +90,118 @@ XMLTag
 ConstantString
 
 
+LLM Output Transformation:
+
+The task is to convert an XML element from version 1 to version 2. Below are example transformations:
+
+Transformation 1:
+
+Input:
+<packagedElement name="expects_cachoeira"></packagedElement>
+
+Output:
+<packagedElement name="expects_cachoeira" visibility="public"></packagedElement>
+
+Transformation 2:
+
+Input:
+<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D">
+  <body>This is body gemonies d4143d60.</body>
+</ownedComment>
+
+Output:
+<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body gemonies d4143d60." />
+
+Transformation 3:
+
+Input:
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira">
+  <ownedComment id="_0-3eYuRbEduVs91jndUPVw" annotatedElement="_383AC7D3023A40C0CE87009D">
+    <body>This is body d4143d60.</body>
+  </ownedComment>
+</packagedElement>
+
+Output:
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira" visibility="public">
+  <ownedComment id="_0-3eYuRbEduVs91jndUPVw" body="This is body d4143d60." annotatedElement="_383AC7D3023A40C0CE87009D" />
+</packagedElement>
+
+Transformation 4:
+
+Input:
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira">
+  <eAnnotations id="_0-3eZeRbEduVs91jndUPVw" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <details id="_0-3eZuRbEduVs91jndUPVw" key="entity" />
+  </eAnnotations>
+</packagedElement>
+
+Output:
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira"></packagedElement>
+
+Now, transform the following input XML:
+
+<packagedElement type="uml:Class" id="_TYwJQFb6Ed-xTsassymaRA" name="safely_nimmed">
+  <eAnnotations id="_0gKwMORbEduVs91jndUPVw" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <details id="_0gxNKuRbEduVs91jndUPVw" key="entity" />
+  </eAnnotations>
+  <ownedComment id="_383AC7D3023A3F097A88029B" annotatedElement="_TYwJQFb6Ed-xTsassymaRA">
+    <body>This is body d4128197.</body>
+  </ownedComment>
+  <ownedAttribute id="_383AC7D3023A40C0CEBF005E" name="unsteep_commaes" visibility="private" />
+  <ownedAttribute id="_383AC7D3023A40C0CE9C0271" name="polarography_palirrhea"
+    visibility="public" type="_383AC7D3023A40C0CAFC0106" isUnique="false" aggregation="shared"
+    association="_383AC7D3023A40C0CE9B034C" />
+</packagedElement>
 
 
-Generated Program: SetAttribute(
-    ExtractChild(
-        XMLTag(ConstantString("root"),
-               [(ConstantString("root_attr"), ConstantString("root_value"))],
-               None,
-               [XMLTag(ConstantString("level1"), None, None,
-                       [XMLTag(ConstantString("body"), None, ConstantString("body text"), None)])]),
-        ConstantString("level1")
-    ),
-    ConstantString("body"),
-    ExtractAttribute(
-        ExtractChild(
-            ExtractChild(
-                XMLTag(ConstantString("root"),
-                       [(ConstantString("root_attr"), ConstantString("root_value"))],
-                       None,
-                       [XMLTag(ConstantString("level1"), None, None,
-                               [XMLTag(ConstantString("body"), None, ConstantString("body text"), None)])]),
-                ConstantString("level1")
-            ),
-            ConstantString("body")
-        ),
-        ConstantString("text")
-    )
-)
 
 
-('{"attributes": {"body": "body text"}, "children": [], "tag": "root", "text": null}',)
+LLM Output Program:
 
+The task is to write a program that will always convert an XML element from version 1 to version 2. Below are example transformations:
 
-('{"attributes": {}, "children": [{"attributes": {}, "children": [], "tag": "body", "text": "body text"}], "tag": "root", "text": null}',)
+Transformation 1:
 
+Input:
+<packagedElement name="expects_cachoeira"></packagedElement>
 
-SetChild(
-    XMLVariable('input1'),
-    ExtractTag(ExtractChild(XMLVariable('input1'), ConstantString("body"))),
-    SetAttribute(
-        ExtractChild(XMLVariable('input1'), ConstantString("body")),
-        ExtractTag(ExtractChild(XMLVariable('input1'), ConstantString("body"))),
-        ExtractText(ExtractChild(XMLVariable('input1'), ConstantString("body")))
-    )
-)
+Output:
+<packagedElement name="expects_cachoeira" visibility="public"></packagedElement>
+
+Transformation 2:
+
+Input:
+<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D">
+  <body>This is body gemonies d4143d60.</body>
+</ownedComment>
+
+Output:
+<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body gemonies d4143d60." />
+
+Transformation 3:
+
+Input:
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira">
+  <ownedComment id="_0-3eYuRbEduVs91jndUPVw" annotatedElement="_383AC7D3023A40C0CE87009D">
+    <body>This is body d4143d60.</body>
+  </ownedComment>
+</packagedElement>
+
+Output:
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira" visibility="public">
+  <ownedComment id="_0-3eYuRbEduVs91jndUPVw" body="This is body d4143d60." annotatedElement="_383AC7D3023A40C0CE87009D" />
+</packagedElement>
+
+Transformation 4:
+
+Input:
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira">
+  <eAnnotations id="_0-3eZeRbEduVs91jndUPVw" source="http://www.eclipse.org/uml2/2.0.0/UML">
+    <details id="_0-3eZuRbEduVs91jndUPVw" key="entity" />
+  </eAnnotations>
+</packagedElement>
+
+Output:
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira"></packagedElement>
+
+Now, write a program that accepts an input XML element and outputs the transformed element.
