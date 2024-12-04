@@ -17,27 +17,24 @@ def make_variable(variable_name, variable_value):
         return XMLVariable(variable_name)
     assert False, f"Unsupported input type: {type(variable_value)}"
 
-def bottom_up_generator(global_bound, operators, constants, input_outputs):
+def bottom_up_generator(global_bound, operators, input_outputs):
     """
-    Generates programs in a bottom-up manner to synthesize expressions that satisfy input-output pairs.
-    Starts with empty XMLTag structures and incrementally populates them.
+    Generates programs in a bottom-up manner using extraction operators.
     """
-    variables = list({make_variable(variable_name, variable_value)
+    variables = list({make_variable(var_name, var_value)
                       for inputs, _ in input_outputs
-                      for variable_name, variable_value in inputs.items()})
-
-    variables_and_constants = constants + variables
+                      for var_name, var_value in inputs.items()})
 
     expr_by_size_and_type = {}
 
     # Initialize with empty XMLTag structures
-    empty_xml = XMLTag(ConstantString(""), [], None, [])
+    empty_xml = XMLTag(None, [], None, None)
     if ("xml", 1) not in expr_by_size_and_type:
         expr_by_size_and_type[("xml", 1)] = set()
     expr_by_size_and_type[("xml", 1)].add(empty_xml)
 
-    # Add constants and variables as size 1 expressions
-    for expr in variables_and_constants:
+    # Initialize with variables
+    for expr in variables:
         t = expr.return_type
         if (t, 1) not in expr_by_size_and_type:
             expr_by_size_and_type[(t, 1)] = set()
@@ -46,7 +43,7 @@ def bottom_up_generator(global_bound, operators, constants, input_outputs):
     observational_equivalence = {}
 
     for size in range(2, global_bound + 1):
-        for operator in operators:
+        for operator in operators:        
             arity = len(operator.argument_types)
             partitions = integer_partitions(size - 1, arity)
 
@@ -63,9 +60,9 @@ def bottom_up_generator(global_bound, operators, constants, input_outputs):
                     # Generate combinations of arguments for the operator
                     for args in itertools.product(*argument_combinations):
                         expr = operator(*args)
-
+                        
                         # Evaluate the expression on inputs
-                        outputs = tuple(json.dumps(expr.evaluate(input), sort_keys=True) for input, _ in input_outputs)
+                        outputs = tuple(json.dumps(expr.evaluate(input), default=lambda x: x.content if isinstance(x, ConstantString) else x, sort_keys=True) for input, _ in input_outputs)
 
                         # Add only unique outputs
                         if outputs not in observational_equivalence:
@@ -75,60 +72,6 @@ def bottom_up_generator(global_bound, operators, constants, input_outputs):
                                 expr_by_size_and_type[(t, size)] = set()
                             expr_by_size_and_type[(t, size)].add(expr)
                             yield expr
-
-# def bottom_up_generator(global_bound, operators, constants, input_outputs):
-#     """
-#     Generates programs in a bottom-up manner to synthesize expressions that satisfy input-output pairs.
-#     """
-#     variables = list({make_variable(variable_name, variable_value)
-#                       for inputs, _ in input_outputs
-#                       for variable_name, variable_value in inputs.items()})
-    
-#     variables_and_constants = constants + variables
-
-#     expr_by_size_and_type = {}
-
-#     # Initialize expressions of size 1 (constants and variables)
-#     for expr in variables_and_constants:
-#         t = expr.return_type
-#         if (t, 1) not in expr_by_size_and_type:
-#             expr_by_size_and_type[(t, 1)] = set()
-#         expr_by_size_and_type[(t, 1)].add(expr)
-
-#     observational_equivalence = {}
-
-#     for size in range(2, global_bound + 1):
-#         for operator in operators:
-#             arity = len(operator.argument_types)
-#             partitions = integer_partitions(size - 1, arity)
-
-#             for partition in partitions:
-#                 argument_combinations = []
-
-#                 # Collect arguments matching the operator's types and size partitions
-#                 for arg_size, arg_type in zip(partition, operator.argument_types):
-#                     if (arg_type, arg_size) in expr_by_size_and_type:
-#                         argument_combinations.append(list(expr_by_size_and_type[(arg_type, arg_size)]))
-#                     else:
-#                         break
-#                 else:
-#                     # Generate combinations of arguments for the operator
-#                     for args in itertools.product(*argument_combinations):
-#                         expr = operator(*args)
-
-#                         # Evaluate the expression on inputs
-#                         outputs = tuple(json.dumps(expr.evaluate(input), sort_keys=True) for input, _ in input_outputs)
-#                         # outputs = tuple(expr.evaluate(input) for input, _ in input_outputs)
-#                         # print(outputs)
-
-#                         if outputs not in observational_equivalence:
-#                             observational_equivalence[outputs] = expr
-#                             t = expr.return_type
-#                             if (t, size) not in expr_by_size_and_type:
-#                                 expr_by_size_and_type[(t, size)] = set()
-#                             expr_by_size_and_type[(t, size)].add(expr)
-#                             # print(expr)
-#                             yield expr
 
 def integer_partitions(target_value, number_of_arguments):
     """
@@ -158,7 +101,7 @@ def integer_partitions(target_value, number_of_arguments):
              for x1 in range(target_value + 1)
              for x2s in integer_partitions(target_value - x1, number_of_arguments - 1) ]
 
-def bottom_up_xml(global_bound, operators, constants, input_outputs):
+def bottom_up_xml(global_bound, operators, input_outputs):
     """
     global_bound: int. Upper bound on expression size.
     operators: List of operator classes for XML.
@@ -168,35 +111,36 @@ def bottom_up_xml(global_bound, operators, constants, input_outputs):
     target_outputs = tuple(json.dumps(output.evaluate({}), sort_keys=True) for _, output in input_outputs)
     print(target_outputs)
 
-    # with open("outputs.txt", "w") as file:
-    for expr in bottom_up_generator(global_bound, operators, constants, input_outputs):
-        outputs = tuple(json.dumps(expr.evaluate(input), sort_keys=True) for input, _ in input_outputs)
-        # print(outputs)
-        # file.write(f"{outputs}\n")
-        if outputs == target_outputs:
-            # print(outputs)
-            return expr
+    with open("outputs.txt", "w") as o_file:
+        with open("programs.txt", "w") as p_file:
+            for expr in bottom_up_generator(global_bound, operators, input_outputs):
+                p_file.write(f"{expr}\n")
+                outputs = tuple(json.dumps(expr.evaluate(input), sort_keys=True) for input, _ in input_outputs)
+                # print(outputs)
+                o_file.write(f"{outputs}\n")
+                if outputs == target_outputs:
+                    # print(outputs)
+                    return expr
     return None
-
-input_output_pairs = [
-    ({"input1": XMLTag(ConstantString("root"), [(ConstantString("root_attr"), ConstantString("root_value"))], None,
-                      [XMLTag(ConstantString("level1"), None, None,
-                              [XMLTag(ConstantString("body"), None, ConstantString("body text"), None)])])},
-     XMLTag(ConstantString("root"), [(ConstantString("root_attr"), ConstantString("root_value"))], None,
-            [XMLTag(ConstantString("level1"), [(ConstantString("body"), ConstantString("body text"))], None, None)]))
-]
 
 # input_output_pairs = [
 #     ({"input1": XMLTag(ConstantString("root"), [], None,
-#                         [XMLTag(ConstantString("body"), None, ConstantString("body text"), None)])}, 
-#     XMLTag(ConstantString("root"), [(ConstantString("body"), ConstantString("body text"))], None, [])
+#                         XMLTag(ConstantString("body"), None, ConstantString("body text"), None))}, 
+#     XMLTag(ConstantString("root"), [(ConstantString("body"), ConstantString("body text"))], None, None)
 #     )
 # ]
 
-operators = [ExtractAttribute, SetAttribute, ExtractChild, SetChild, SetTag]
-# constants = [ConstantString("root"), ConstantString("body"), ConstantString("body text")] 
-constants = [ConstantString("root"), ConstantString("body"), ConstantString("body text"), ConstantString("level1"), ConstantString("root_attr"), ConstantString("root_value")] 
+input_output_pairs = [
+    ({"input1": XMLTag(ConstantString("root"), [(ConstantString("root_attr"), ConstantString("root_value"))], None,
+                      XMLTag(ConstantString("level1"), None, None,
+                              XMLTag(ConstantString("body"), None, ConstantString("body text"), None)))},
+     XMLTag(ConstantString("root"), [(ConstantString("root_attr"), ConstantString("root_value"))], None,
+            XMLTag(ConstantString("level1"), [(ConstantString("body"), ConstantString("body text"))], None, None)))
+]
 
-program = bottom_up_xml(15, operators, constants, input_output_pairs)
+operators = [
+    ExtractTag, ExtractAttribute, ExtractText, ExtractChild, SetTag, SetAttribute, SetChild
+]
+
+program = bottom_up_xml(20, operators, input_output_pairs)
 print("Generated Program:", program)
-

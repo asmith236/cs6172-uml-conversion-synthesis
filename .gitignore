@@ -3,3 +3,4 @@ __pycache__/
 test_case_synthesis/input.efx
 deprecated/
 bottom_up/outputs.txt
+bottom_up/programs.txt

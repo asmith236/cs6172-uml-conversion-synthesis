@@ -1,6 +1,3 @@
-import xml.etree.ElementTree as ET
-import html
-
 class Expression():
 
     def evaluate(self, environment):
@@ -65,61 +62,66 @@ class ConstantString(Expression):
         base_cost = 50 # init high cost for constant strings
         length_penalty = len(self.content) ** 3  # cost increases exponentially w string length
         return base_cost + length_penalty
-    
+
 class XMLTag(Expression):
     return_type = "xml"
     argument_types = []
 
-    def __init__(self, tag, attributes, text, children):
-        self.tag = tag  # ConstantString
+    def __init__(self, tag, attributes, text, child):
+        self.tag = tag  # ConstantString or None
         self.attributes = attributes  # List of (ConstantString, ConstantString)
         self.text = text  # ConstantString or None
-        self.children = children  # List of XMLTag or None
+        self.child = child  # XMLTag or None
 
     def __str__(self):
+        tag = str(self.tag) if self.tag else "none"
         attributes = f"[{', '.join(map(str, self.attributes))}]" if self.attributes else "none"
         text = str(self.text) if self.text else "none"
-        children = f"[{', '.join(map(str, self.children))}]" if self.children else "none"
-        return f"XMLTag({self.tag}, {attributes}, {text}, {children})"
+        child = str(self.child) if self.child else "none"
+        return f"XMLTag({tag}, {attributes}, {text}, {child})"
     
     def evaluate(self, environment):
-        tag = self.tag.evaluate(environment)
+        tag = self.tag.evaluate(environment) if self.tag else None
         attributes = {
-                    k.evaluate(environment): v.evaluate(environment)
-                    for k, v in (self.attributes or [])
-                    if k.evaluate(environment) is not None
-                }
+            k.evaluate(environment): v.evaluate(environment)
+            for k, v in (self.attributes or [])
+            if k.evaluate(environment) is not None
+        }
         text = self.text.evaluate(environment) if self.text else None
-        children = [child.evaluate(environment) for child in self.children or []]
+        child = self.child.evaluate(environment) if self.child else None
         return {
             "tag": tag,
             "attributes": attributes,
             "text": text,
-            "children": children
+            "children": child  # Single child or None
         }
 
     def arguments(self):
-        args = [self.tag] + (self.attributes or []) + ([self.text] if self.text else []) + (self.children or [])
+        args = [self.tag] + (self.attributes or []) + ([self.text] if self.text else []) + ([self.child] if self.child else [])
         return args
 
 class ExtractAttribute(Expression):
     return_type = "str"
     argument_types = ["xml", "str"]
 
-    def __init__(self, xml_expr, attr_name):
+    def __init__(self, xml_expr, attr_name=None):
         self.xml_expr = xml_expr
-        self.attr_name = attr_name
+        self.attr_name = attr_name  # Can be a ConstantString or None
 
     def __str__(self):
-        return f"ExtractAttribute({self.xml_expr}, {self.attr_name})"
+        attr_name = str(self.attr_name) if self.attr_name else "none"
+        return f"ExtractAttribute({self.xml_expr}, {attr_name})"
 
     def evaluate(self, environment):
         xml = self.xml_expr.evaluate(environment)
-        attr_name = self.attr_name.evaluate(environment)
-        return xml["attributes"].get(attr_name, None)
+        if self.attr_name:
+            attr_name = self.attr_name.evaluate(environment)
+            return xml["attributes"].get(attr_name, None)
+        # Dynamically collect all attribute names and values
+        return xml["attributes"]
 
     def arguments(self):
-        return [self.xml_expr, self.attr_name]
+        return [self.xml_expr] + ([self.attr_name] if self.attr_name else [])
 
 class SetAttribute(Expression):
     return_type = "xml"
@@ -146,25 +148,26 @@ class SetAttribute(Expression):
 
 class ExtractChild(Expression):
     return_type = "xml"
-    argument_types = ["xml", "str"]
+    argument_types = ["xml"]
 
-    def __init__(self, xml_expr, child_tag):
+    def __init__(self, xml_expr):
         self.xml_expr = xml_expr
-        self.child_tag = child_tag
 
     def __str__(self):
-        return f"ExtractChild({self.xml_expr}, {self.child_tag})"
+        return f"ExtractChild({self.xml_expr})"
 
     def evaluate(self, environment):
+        # Extract the XML object from the given expression
         xml = self.xml_expr.evaluate(environment)
-        child_tag = self.child_tag.evaluate(environment)
-        for child in xml["children"]:
-            if child["tag"] == child_tag:
-                return child
-        return None
+        
+        # Get the single child element if it exists
+        child = xml.get("children", None)
+        if child is not None:
+            return child
+        return None  # Return None if no child exists
 
     def arguments(self):
-        return [self.xml_expr, self.child_tag]
+        return [self.xml_expr]
 
 class SetChild(Expression):
     return_type = "xml"
@@ -182,7 +185,14 @@ class SetChild(Expression):
         xml = self.xml_expr.evaluate(environment)
         child_tag = self.child_tag.evaluate(environment)
         child_value = self.child_value.evaluate(environment)
-        xml["children"] = [child for child in xml["children"] if child["tag"] != child_tag] + [child_value]
+
+        # Replace child only if the tags match
+        if xml.get("children") and xml["children"]["tag"] == child_tag:
+            xml["children"] = child_value
+        else:
+            # If there is no child or tag does not match, simply set the child
+            xml["children"] = child_value
+
         return xml
 
     def arguments(self):
@@ -235,6 +245,42 @@ class SetTag(Expression):
 
     def arguments(self):
         return [self.xml_expr, self.tag_value]
+    
+class ExtractTag(Expression):
+    return_type = "str"
+    argument_types = ["xml"]
+
+    def __init__(self, xml_expr):
+        self.xml_expr = xml_expr
+
+    def __str__(self):
+        return f"ExtractTag({self.xml_expr})"
+
+    def evaluate(self, environment):
+        xml = self.xml_expr.evaluate(environment)
+        # Return the tag from the XML structure
+        return xml.get("tag")
+
+    def arguments(self):
+        return [self.xml_expr]
+    
+class ExtractText(Expression):
+    return_type = "str"
+    argument_types = ["xml"]
+
+    def __init__(self, xml_expr):
+        self.xml_expr = xml_expr
+
+    def __str__(self):
+        return f"ExtractText({self.xml_expr})"
+
+    def evaluate(self, environment):
+        xml = self.xml_expr.evaluate(environment)
+        # Return the text from the XML structure
+        return xml.get("text")
+
+    def arguments(self):
+        return [self.xml_expr]
 
 def test_evaluation(verbose=False):
     expressions, ground_truth = [], []

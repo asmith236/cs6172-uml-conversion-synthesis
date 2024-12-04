@@ -123,3 +123,14 @@ Generated Program: SetAttribute(
 
 
 ('{"attributes": {}, "children": [{"attributes": {}, "children": [], "tag": "body", "text": "body text"}], "tag": "root", "text": null}',)
+
+
+SetChild(
+    XMLVariable('input1'),
+    ExtractTag(ExtractChild(XMLVariable('input1'), ConstantString("body"))),
+    SetAttribute(
+        ExtractChild(XMLVariable('input1'), ConstantString("body")),
+        ExtractTag(ExtractChild(XMLVariable('input1'), ConstantString("body"))),
+        ExtractText(ExtractChild(XMLVariable('input1'), ConstantString("body")))
+    )
+)
