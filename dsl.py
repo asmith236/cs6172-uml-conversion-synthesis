@@ -26,10 +26,10 @@ class Expression():
     def __lt__(self, other): return str(self) < str(other)
 
     def minimum_cost_member_of_extension(self):
-        assert False, "implement as part of homework"
+        assert False, "implement"
 
     def version_space_size(self):
-        assert False, "implement as part of homework"
+        assert False, "implement"
         
 class ConstantString(Expression):
     return_type = "str"
@@ -95,7 +95,7 @@ class XMLTag(Expression):
             "tag": tag,
             "attributes": attributes,
             "text": text,
-            "children": child  # Single child or None
+            "children": child  # single child or None
         }
 
     def arguments(self):
@@ -108,7 +108,7 @@ class ExtractAttribute(Expression):
 
     def __init__(self, xml_expr, attr_name=None):
         self.xml_expr = xml_expr
-        self.attr_name = attr_name  # Can be a ConstantString or None
+        self.attr_name = attr_name  # ConstantString or None
 
     def __str__(self):
         attr_name = str(self.attr_name) if self.attr_name else "none"
@@ -119,7 +119,7 @@ class ExtractAttribute(Expression):
         if self.attr_name:
             attr_name = self.attr_name.evaluate(environment)
             return xml["attributes"].get(attr_name, None)
-        # Dynamically collect all attribute names and values
+        # dynamically collect all attribute names and values
         return xml["attributes"]
 
     def arguments(self):
@@ -159,14 +159,14 @@ class ExtractChild(Expression):
         return f"ExtractChild({self.xml_expr})"
 
     def evaluate(self, environment):
-        # Extract the XML object from the given expression
+        # extract XML obj from the given expression
         xml = self.xml_expr.evaluate(environment)
         
-        # Get the single child element if it exists
+        # get single child elem if it exists
         child = xml.get("children", None)
         if child is not None:
             return child
-        return None  # Return None if no child exists
+        return None  # return None if no child exists
 
     def arguments(self):
         return [self.xml_expr]
@@ -188,11 +188,11 @@ class SetChild(Expression):
         child_tag = self.child_tag.evaluate(environment)
         child_value = self.child_value.evaluate(environment)
 
-        # Replace child only if the tags match
+        # replace child only if the tags match
         if xml.get("children") and xml["children"]["tag"] == child_tag:
             xml["children"] = child_value
         else:
-            # If there is no child or tag does not match, simply set the child
+            # if there is no child or tag does not match, just set the child
             xml["children"] = child_value
 
         return xml
@@ -283,6 +283,31 @@ class ExtractText(Expression):
 
     def arguments(self):
         return [self.xml_expr]
+    
+class SetText(Expression):
+    return_type = "xml"
+    argument_types = ["xml", "str"]
+
+    def __init__(self, xml_expr, text_value):
+        self.xml_expr = xml_expr
+        self.text_value = text_value  # Expected to be a ConstantString or equivalent
+
+    def __str__(self):
+        return f"SetText({self.xml_expr}, {self.text_value})"
+
+    def evaluate(self, environment):
+        # Evaluate the XML object and the new text value
+        xml = self.xml_expr.evaluate(environment)
+        text_value = self.text_value.evaluate(environment)
+        
+        # Update the text field of the XML
+        xml["text"] = text_value
+        
+        # Return the updated XML object
+        return xml
+
+    def arguments(self):
+        return [self.xml_expr, self.text_value]
 
 def test_evaluation(verbose=False):
     expressions, ground_truth = [], []
