@@ -130,3 +130,173 @@ Now, write a program that accepts an input XML element and outputs the transform
 
 -------------------------------------------------------------------------------
 
+aspensmith@Aspens-MacBook-Pro-2 bottom_up % python3 bottom_up.py
+
+==================================================
+
+Testing case with size bound 20...
+
+Input:
+<packagedElement visibility="public"/>
+
+Desired Output:
+<packagedElement/>
+
+Test case passed!
+Number of programs generated: 5
+
+Synthesized program:
+SetTag(
+    XMLTag(
+        None
+    ),
+    ConstantString('packagedElement')
+)
+
+Execution time: 0.0003 seconds
+
+==================================================
+
+Testing case with size bound 20...
+
+Input:
+<packagedElement/>
+
+Desired Output:
+<packagedElement visibility="public"/>
+
+Test case passed!
+Number of programs generated: 25
+
+Synthesized program:
+SetAttribute(
+    XMLVariable('input1'),
+    ConstantString('visibility'),
+    ConstantString('public')
+)
+
+Execution time: 0.0008 seconds
+
+==================================================
+
+Testing case with size bound 20...
+
+Input:
+<ownedComment>
+    <body>This is body d4143d60.</body>
+</ownedComment>
+
+Desired Output:
+<ownedComment body="This is body d4143d60."/>
+
+Test case passed!
+Number of programs generated: 120
+
+Synthesized program:
+SetTag(
+    SetAttribute(
+        XMLTag(
+            None
+        ),
+        ConstantString('body'),
+        ConstantString('This is body d4143d60.')
+    ),
+    ConstantString('ownedComment')
+)
+
+Execution time: 0.0058 seconds
+
+==================================================
+
+Testing case with size bound 20...
+
+Input:
+<ownedComment body="This is body d4143d60."/>
+
+Desired Output:
+<ownedComment>
+    <body>This is body d4143d60.</body>
+</ownedComment>
+
+Test case passed!
+Number of programs generated: 3393
+
+Synthesized program:
+SetTag(
+    SetChild(
+        XMLTag(
+            None
+        ),
+        ConstantString('body'),
+        SetTag(
+            SetText(
+                XMLTag(
+                    None
+                ),
+                ExtractAttribute(
+                    XMLVariable('input1'),
+                    ConstantString('body')
+                )
+            ),
+            ConstantString('body')
+        )
+    ),
+    ConstantString('ownedComment')
+)
+
+Execution time: 0.3086 seconds
+
+==================================================
+
+Testing case with size bound 20...
+
+Input:
+<packagedElement id="_0-3eYuRbEduVs91jndUPVw">
+    <ownedComment>
+        <body>This is body d4143d60.</body>
+    </ownedComment>
+</packagedElement>
+
+Desired Output:
+<packagedElement id="_0-3eYuRbEduVs91jndUPVw">
+    <ownedComment body="This is body d4143d60."/>
+</packagedElement>
+
+Test case passed!
+Number of programs generated: 2852522
+
+Synthesized program:
+SetChild(
+    XMLVariable('input1'),
+    ConstantString('_0-3eYuRbEduVs91jndUPVw'),
+    SetTag(
+        SetAttribute(
+            XMLTag(
+                None
+            ),
+            ExtractTag(
+                ExtractChild(
+                    ExtractChild(
+                        XMLVariable('input1')
+                    )
+                )
+            ),
+            ExtractText(
+                ExtractChild(
+                    ExtractChild(
+                        XMLVariable('input1')
+                    )
+                )
+            )
+        ),
+        ExtractTag(
+            ExtractChild(
+                XMLVariable('input1')
+            )
+        )
+    )
+)
+
+Execution time: 357.9116 seconds
+==================================================
+[+] XML Bottom-Up Synthesis: +5/5 points
