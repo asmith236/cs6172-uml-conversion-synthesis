@@ -1,4 +1,5 @@
 
+import inspect
 import itertools
 import json
 import sys
@@ -162,20 +163,27 @@ def test_bottom_up_xml(verbose=False):
     
     test_cases = []
 
-    # test_cases.append([({"input1": xml_to_dsl(input1)}, xml_to_dsl(output1))])
-
-    test_cases.append(test_case_1)
-    test_cases.append(test_case_2)
-    test_cases.append(test_case_3)
-    test_cases.append(test_case_4)
-    test_cases.append(test_case_5)
+    test_cases.append((test_case_1, 1))
+    test_cases.append((test_case_2, 2))
+    test_cases.append((test_case_3, 3))
+    test_cases.append((test_case_4, 4))
+    test_cases.append((test_case_5, 5))
+    test_cases.append((test_case_6, 6))
+    test_cases.append((test_case_7, 7))
+    test_cases.append((test_case_8, 8))
+    test_cases.append((test_case_9, 9))
+    test_cases.append((test_case_10, 10))
+    test_cases.append((test_case_11, 11))
+    test_cases.append((test_case_12, 12))
+    # test_cases.append((test_case_13, 13))
     
     # Points for each test case
-    how_many_points = [1, 1, 1, 1, 1]
-    
+    how_many_points = [1] * len(test_cases)
+
     # Optimal sizes for each test case
-    optimal_sizes = [20, 20, 20, 20, 20]
-    
+    # optimal_sizes = [20, 20, 20, 20, 20, 20, 20, 30]
+    optimal_sizes = [20] * len(test_cases)
+
     total_points = 0
     
     def prettify_expression(expression, indent=0):
@@ -206,7 +214,7 @@ def test_bottom_up_xml(verbose=False):
         spacing = " " * indent
         if xml is None:
             return f"{spacing}<none/>"
-        
+
         attributes = " ".join([f'{key.content}="{value.content}"' for key, value in (xml.attributes or [])])
         tag = xml.tag.content if xml.tag else "none"
         text = xml.text.content if xml.text else ""
@@ -230,10 +238,9 @@ def test_bottom_up_xml(verbose=False):
             f"{spacing}</{tag}>"
         )
 
-
-    for test_case, optimal_size, pt in zip(test_cases, optimal_sizes, how_many_points):
+    for (test_case, case_number), optimal_size, pt in zip(test_cases, optimal_sizes, how_many_points):
         print("\n" + "=" * 50 + "\n")
-        print(f"Testing case with size bound {optimal_size}...\n")
+        print(f"Executing test case {case_number} with size bound {optimal_size}...\n")
         inputs, desired_output = test_case[0]
 
         # Convert input and desired output to prettified XML strings
