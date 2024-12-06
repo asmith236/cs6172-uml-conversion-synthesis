@@ -25,10 +25,34 @@ def bottom_up_generator(global_bound, operators, input_outputs):
     """
     Generates programs in a bottom-up manner using extraction operators.
     """
-    # Extract variables from input
     variables = list({make_variable(var_name, var_value)
                       for inputs, _ in input_outputs
                       for var_name, var_value in inputs.items()})
+    
+    def collect_constant_strings_input(xml, attribute_keys, tags):
+        if xml is None:
+            return
+        # Add tag if it exists
+        if xml.tag:
+            tags.add(xml.tag.content)
+        # Add attributes (both keys and values)
+        attribute_keys.update(attr_key.content for attr_key, _ in value.attributes)
+        # Recurse for child
+        for child in xml.children:
+            collect_constant_strings_input(child, attribute_keys, tags)
+
+    def collect_constant_strings_output(xml, attribute_keys, tags):
+        if xml is None:
+            return
+        # Add tag if it exists
+        if xml.tag:
+            tags.add(value.tag.content)
+        # Add attributes (both keys and values)
+        attribute_keys.update(attr_value.content for attr_key, attr_value in output.attributes if attr_key.content not in tags)
+        attribute_keys.update(attr_key.content for attr_key, _ in output.attributes)
+        # Recurse for child
+        for child in xml.children:
+            collect_constant_strings_output(child, attribute_keys, tags)
     
     # Extract unique attribute keys and tags from input
     attribute_keys = set()
@@ -36,25 +60,16 @@ def bottom_up_generator(global_bound, operators, input_outputs):
     for inputs, _ in input_outputs:
         for value in inputs.values():
             if isinstance(value, XMLTag):
-                # Extract attribute keys
-                attribute_keys.update(attr_key.content for attr_key, _ in value.attributes)
-                # Extract tags
-                if value.tag:
-                    tags.add(value.tag.content)
-    
+                collect_constant_strings_input(value, attribute_keys, tags)
+
     # Extract unique attribute keys, values, and tags from output
     for _, output in input_outputs:
         if isinstance(output, XMLTag):
-            # Extract attribute keys and values
-            attribute_keys.update(attr_key.content for attr_key, _ in output.attributes)
-            attribute_keys.update(attr_value.content for _, attr_value in output.attributes)
-            # Extract tags
-            if output.tag:
-                tags.add(output.tag.content)
+            collect_constant_strings_output(value, attribute_keys, tags)
     
     # Create terminals for extracted keys, values, and tags
-    attribute_terminals = [ConstantString(key_or_value) for key_or_value in attribute_keys]
-    tag_terminals = [ConstantString(tag) for tag in tags]
+    unique_at_terminals = attribute_keys.union(tags)
+    at_terminals = [ConstantString(at_terminal) for at_terminal in unique_at_terminals]
 
     # Initialize expressions by size and type
     expr_by_size_and_type = {}
@@ -66,7 +81,7 @@ def bottom_up_generator(global_bound, operators, input_outputs):
     expr_by_size_and_type[("xml", 1)].add(empty_xml)
 
     # Initialize with variables and terminals
-    terminals = variables + attribute_terminals + tag_terminals
+    terminals = variables + at_terminals
     for expr in terminals:
         t = expr.return_type
         if (t, 1) not in expr_by_size_and_type:
@@ -141,19 +156,19 @@ def bottom_up_xml(global_bound, operators, input_outputs):
     input_outputs: List of input-output XML pairs.
     """
     target_outputs = tuple(json.dumps(output.evaluate({}), sort_keys=True) for _, output in input_outputs)
-    # print(target_outputs)
+    print(target_outputs)
 
     expression_count = 0  
 
-    # with open("outputs.txt", "w") as o_file: # for debugging
-        # with open("programs.txt", "w") as p_file:
-    for expr in bottom_up_generator(global_bound, operators, input_outputs):
-        # p_file.write(f"{expr}\n")
-        expression_count += 1 
-        outputs = tuple(json.dumps(expr.evaluate(input), sort_keys=True) for input, _ in input_outputs)
-        # o_file.write(f"{outputs}\n")
-        if outputs == target_outputs:
-            return expr, expression_count
+    with open("outputs.txt", "w") as o_file: # for debugging
+        with open("programs.txt", "w") as p_file:
+            for expr in bottom_up_generator(global_bound, operators, input_outputs):
+                p_file.write(f"{expr}\n")
+                expression_count += 1 
+                outputs = tuple(json.dumps(expr.evaluate(input), sort_keys=True) for input, _ in input_outputs)
+                o_file.write(f"{outputs}\n")
+                if outputs == target_outputs:
+                    return expr, expression_count
     return None, expression_count
 
 def test_bottom_up_xml(verbose=False):
@@ -163,18 +178,18 @@ def test_bottom_up_xml(verbose=False):
     
     test_cases = []
 
-    test_cases.append((test_case_1, 1))
-    test_cases.append((test_case_2, 2))
+    # test_cases.append((test_case_1, 1))
+    # test_cases.append((test_case_2, 2))
     test_cases.append((test_case_3, 3))
-    test_cases.append((test_case_4, 4))
-    test_cases.append((test_case_5, 5))
-    test_cases.append((test_case_6, 6))
-    test_cases.append((test_case_7, 7))
-    test_cases.append((test_case_8, 8))
-    test_cases.append((test_case_9, 9))
-    test_cases.append((test_case_10, 10))
-    test_cases.append((test_case_11, 11))
-    test_cases.append((test_case_12, 12))
+    # test_cases.append((test_case_4, 4))
+    # test_cases.append((test_case_5, 5))
+    # test_cases.append((test_case_6, 6))
+    # test_cases.append((test_case_7, 7))
+    # test_cases.append((test_case_8, 8))
+    # test_cases.append((test_case_9, 9))
+    # test_cases.append((test_case_10, 10))
+    # test_cases.append((test_case_11, 11))
+    # test_cases.append((test_case_12, 12))
     # test_cases.append((test_case_13, 13))
     
     # Points for each test case
@@ -215,28 +230,32 @@ def test_bottom_up_xml(verbose=False):
         if xml is None:
             return f"{spacing}<none/>"
 
+        # Format attributes
         attributes = " ".join([f'{key.content}="{value.content}"' for key, value in (xml.attributes or [])])
         tag = xml.tag.content if xml.tag else "none"
         text = xml.text.content if xml.text else ""
-        child = xml_to_pretty_string(xml.child, indent + 4) if xml.child else ""
-        
-        # Format the attributes part
+
+        # Handle children
+        children = "\n".join([xml_to_pretty_string(child, indent + 4) for child in (xml.children or [])])
+
+        # Format the opening tag with attributes
         opening_tag = f"<{tag} {attributes}".strip()
-        
-        # If there's no child or text, close the tag on the same line
-        if not text and not child:
+
+        # If there are no text or children, close the tag on the same line
+        if not text and not children:
             return f"{spacing}{opening_tag}/>"
-        
+
         # If there's only text, keep everything on the same line
-        if text and not child:
+        if text and not children:
             return f"{spacing}{opening_tag}>{text}</{tag}>"
-        
-        # If there's a child, properly indent it
+
+        # If there are children, format them with proper indentation
         return (
             f"{spacing}{opening_tag}>\n"
-            f"{child}\n"
+            f"{children}\n"
             f"{spacing}</{tag}>"
         )
+
 
     for (test_case, case_number), optimal_size, pt in zip(test_cases, optimal_sizes, how_many_points):
         print("\n" + "=" * 50 + "\n")

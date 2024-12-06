@@ -4,25 +4,25 @@ input1 = '<packagedElement visibility="public"></packagedElement>'
 
 output1 = '<packagedElement></packagedElement>'
 
-test_case_1 = [({"input1": xml_to_dsl(input1)}, xml_to_dsl(output1))]
+# test_case_1 = [({"input1": xml_to_dsl(input1)}, xml_to_dsl(output1))]
 
-# test_case_1 = [
-#     ({"input1": XMLTag(ConstantString("packagedElement"), [(ConstantString("visibility"), ConstantString("public"))], None, None)}, 
-#     XMLTag(ConstantString("packagedElement"), [], None, None)
-#     )
-# ]
+test_case_1 = [
+    ({"input1": XMLTag(ConstantString("packagedElement"), [(ConstantString("visibility"), ConstantString("public"))], None, [])}, 
+    XMLTag(ConstantString("packagedElement"), [], None, [])
+    )
+]
 
 input2 = '<packagedElement></packagedElement>'
 
 output2 = '<packagedElement visibility="public"></packagedElement>'
 
-test_case_2 = [({"input1": xml_to_dsl(input2)}, xml_to_dsl(output2))]
+# test_case_2 = [({"input1": xml_to_dsl(input2)}, xml_to_dsl(output2))]
 
-# test_case_2 = [
-#     ({"input1": XMLTag(ConstantString("packagedElement"), [], None, None)}, 
-#     XMLTag(ConstantString("packagedElement"), [(ConstantString("visibility"), ConstantString("public"))], None, None)
-#     )
-# ]
+test_case_2 = [
+    ({"input1": XMLTag(ConstantString("packagedElement"), [], None, [])}, 
+    XMLTag(ConstantString("packagedElement"), [(ConstantString("visibility"), ConstantString("public"))], None, [])
+    )
+]
 
 input3 = '''
         <ownedComment>
@@ -36,8 +36,8 @@ test_case_3 = [({"input1": xml_to_dsl(input3)}, xml_to_dsl(output3))]
 
 # test_case_3 = [
 #     ({"input1": XMLTag(ConstantString("ownedComment"), [], None,
-#                         XMLTag(ConstantString("body"), None, ConstantString("This is body d4143d60."), None))}, 
-#     XMLTag(ConstantString("ownedComment"), [(ConstantString("body"), ConstantString("This is body d4143d60."))], None, None)
+#                         [XMLTag(ConstantString("body"), [], ConstantString("This is body d4143d60."), [])])}, 
+#     XMLTag(ConstantString("ownedComment"), [(ConstantString("body"), ConstantString("This is body d4143d60."))], None, [])
 #     )
 # ]
 
@@ -52,9 +52,9 @@ output4 = '''
 test_case_4 = [({"input1": xml_to_dsl(input4)}, xml_to_dsl(output4))]
 
 # test_case_4 = [
-#     ({"input1": XMLTag(ConstantString("ownedComment"), [(ConstantString("body"), ConstantString("This is body d4143d60."))], None, None)}, 
+#     ({"input1": XMLTag(ConstantString("ownedComment"), [(ConstantString("body"), ConstantString("This is body d4143d60."))], None, [])}, 
 #     XMLTag(ConstantString("ownedComment"), [], None,
-#                         XMLTag(ConstantString("body"), None, ConstantString("This is body d4143d60."), None))
+#                         [XMLTag(ConstantString("body"), None, ConstantString("This is body d4143d60."), [])])
 #                         )
 # ]
 
