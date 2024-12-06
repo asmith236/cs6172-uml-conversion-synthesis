@@ -134,7 +134,7 @@ aspensmith@Aspens-MacBook-Pro-2 bottom_up % python3 bottom_up.py
 
 ==================================================
 
-Testing case with size bound 20...
+Executing test case 1 with size bound 20...
 
 Input:
 <packagedElement visibility="public"/>
@@ -143,7 +143,7 @@ Desired Output:
 <packagedElement/>
 
 Test case passed!
-Number of programs generated: 5
+Number of programs generated: 7
 
 Synthesized program:
 SetTag(
@@ -153,11 +153,11 @@ SetTag(
     ConstantString('packagedElement')
 )
 
-Execution time: 0.0003 seconds
+Execution time: 0.0004 seconds
 
 ==================================================
 
-Testing case with size bound 20...
+Executing test case 2 with size bound 20...
 
 Input:
 <packagedElement/>
@@ -166,7 +166,7 @@ Desired Output:
 <packagedElement visibility="public"/>
 
 Test case passed!
-Number of programs generated: 25
+Number of programs generated: 17
 
 Synthesized program:
 SetAttribute(
@@ -175,11 +175,11 @@ SetAttribute(
     ConstantString('public')
 )
 
-Execution time: 0.0008 seconds
+Execution time: 0.0006 seconds
 
 ==================================================
 
-Testing case with size bound 20...
+Executing test case 3 with size bound 20...
 
 Input:
 <ownedComment>
@@ -190,7 +190,7 @@ Desired Output:
 <ownedComment body="This is body d4143d60."/>
 
 Test case passed!
-Number of programs generated: 120
+Number of programs generated: 278
 
 Synthesized program:
 SetTag(
@@ -199,27 +199,31 @@ SetTag(
             None
         ),
         ConstantString('body'),
-        ConstantString('This is body d4143d60.')
+        ExtractText(
+            ExtractChild(
+                XMLVariable('input1')
+            )
+        )
     ),
     ConstantString('ownedComment')
 )
 
-Execution time: 0.0058 seconds
+Execution time: 0.0193 seconds
 
 ==================================================
 
-Testing case with size bound 20...
+Executing test case 4 with size bound 20...
 
 Input:
-<ownedComment body="This is body d4143d60."/>
+<ownedComment body="This is body gemonies d4143d60."/>
 
 Desired Output:
 <ownedComment>
-    <body>This is body d4143d60.</body>
+    <body>This is body gemonies d4143d60.</body>
 </ownedComment>
 
 Test case passed!
-Number of programs generated: 3393
+Number of programs generated: 3316
 
 Synthesized program:
 SetTag(
@@ -244,11 +248,11 @@ SetTag(
     ConstantString('ownedComment')
 )
 
-Execution time: 0.3086 seconds
+Execution time: 0.2936 seconds
 
 ==================================================
 
-Testing case with size bound 20...
+Executing test case 5 with size bound 20...
 
 Input:
 <packagedElement id="_0-3eYuRbEduVs91jndUPVw">
@@ -263,7 +267,7 @@ Desired Output:
 </packagedElement>
 
 Test case passed!
-Number of programs generated: 2852522
+Number of programs generated: 252363
 
 Synthesized program:
 SetChild(
@@ -274,13 +278,7 @@ SetChild(
             XMLTag(
                 None
             ),
-            ExtractTag(
-                ExtractChild(
-                    ExtractChild(
-                        XMLVariable('input1')
-                    )
-                )
-            ),
+            ConstantString('body'),
             ExtractText(
                 ExtractChild(
                     ExtractChild(
@@ -289,14 +287,118 @@ SetChild(
                 )
             )
         ),
-        ExtractTag(
+        ConstantString('ownedComment')
+    )
+)
+
+Execution time: 20.3047 seconds
+
+==================================================
+
+Executing test case 6 with size bound 20...
+
+Input:
+<packagedElement name="expects_cachoeira" visibility="public"/>
+
+Desired Output:
+<packagedElement name="expects_cachoeira"/>
+
+Test case passed!
+Number of programs generated: 187
+
+Synthesized program:
+SetTag(
+    SetAttribute(
+        XMLTag(
+            None
+        ),
+        ConstantString('name'),
+        ConstantString('expects_cachoeira')
+    ),
+    ConstantString('packagedElement')
+)
+
+Execution time: 0.0085 seconds
+
+==================================================
+
+Executing test case 7 with size bound 20...
+
+Input:
+<packagedElement name="expects_cachoeira"/>
+
+Desired Output:
+<packagedElement name="expects_cachoeira" visibility="public"/>
+
+Test case passed!
+Number of programs generated: 46
+
+Synthesized program:
+SetAttribute(
+    XMLVariable('input1'),
+    ConstantString('visibility'),
+    ConstantString('public')
+)
+
+Execution time: 0.0015 seconds
+
+==================================================
+
+Executing test case 8 with size bound 20...
+
+Input:
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira"/>
+
+Desired Output:
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira" visibility="public"/>
+
+Test case passed!
+Number of programs generated: 97
+
+Synthesized program:
+SetAttribute(
+    XMLVariable('input1'),
+    ConstantString('visibility'),
+    ConstantString('public')
+)
+
+Execution time: 0.0025 seconds
+
+==================================================
+
+Executing test case 9 with size bound 20...
+
+Input:
+<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D">
+    <body>This is body gemonies d4143d60.</body>
+</ownedComment>
+
+Desired Output:
+<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body gemonies d4143d60."/>
+
+Test case passed!
+Number of programs generated: 21183
+
+Synthesized program:
+SetTag(
+    SetAttribute(
+        SetAttribute(
+            XMLTag(
+                None
+            ),
+            ConstantString('annotatedElement'),
+            ConstantString('_383AC7D3023A40C0CE87009D')
+        ),
+        ConstantString('body'),
+        ExtractText(
             ExtractChild(
                 XMLVariable('input1')
             )
         )
-    )
+    ),
+    ConstantString('ownedComment')
 )
 
-Execution time: 357.9116 seconds
+Execution time: 1.6257 seconds
 ==================================================
-[+] XML Bottom-Up Synthesis: +5/5 points
+[+] XML Bottom-Up Synthesis: +9/9 points

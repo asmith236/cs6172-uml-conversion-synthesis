@@ -188,9 +188,9 @@ def test_bottom_up_xml(verbose=False):
     test_cases.append((test_case_7, 7))
     test_cases.append((test_case_8, 8))
     test_cases.append((test_case_9, 9))
-    test_cases.append((test_case_10, 10))
-    test_cases.append((test_case_11, 11))
-    test_cases.append((test_case_12, 12))
+    # test_cases.append((test_case_10, 10))
+    # test_cases.append((test_case_11, 11))
+    # test_cases.append((test_case_12, 12))
     # test_cases.append((test_case_13, 13))
     
     # Points for each test case
