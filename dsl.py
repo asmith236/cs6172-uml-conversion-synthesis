@@ -73,7 +73,7 @@ class XMLTag(Expression):
         self.tag = tag  # ConstantString or None
         self.attributes = attributes  # List of (ConstantString, ConstantString)
         self.text = text  # ConstantString or None
-        self.children = children or []  # List of XMLTag or None
+        self.children = children or []  # List of XMLTag
 
     def __str__(self):
         tag = str(self.tag) if self.tag else "none"
@@ -184,25 +184,22 @@ class ExtractChild(Expression):
 
 class SetChild(Expression):
     return_type = "xml"
-    argument_types = ["xml", "str", "xml", "int"]  # Add "int" for specifying index
+    argument_types = ["xml", "xml", "int"]  # Add "int" for specifying index
 
-    def __init__(self, xml_expr, child_tag, child_value, child_index=None):
+    def __init__(self, xml_expr, child_value, child_index=None):
         self.xml_expr = xml_expr
-        self.child_tag = child_tag
         self.child_value = child_value
         self.child_index = child_index  # ConstantString or None
 
     def __str__(self):
         child_index = str(self.child_index) if self.child_index else "none"
-        return f"SetChild({self.xml_expr}, {self.child_tag}, {self.child_value}, {child_index})"
+        return f"SetChild({self.xml_expr}, {self.child_value}, {child_index})"
 
     def evaluate(self, environment):
         xml = self.xml_expr.evaluate(environment)
-        child_tag = self.child_tag.evaluate(environment)
         child_value = self.child_value.evaluate(environment)
         child_index = self.child_index.evaluate(environment) if self.child_index else None
 
-        # Handle cases where multiple children have the same tag
         children = xml.get("children", [])
         if child_index is not None and 0 <= child_index < len(children):
             # Replace the child at the specified index
@@ -214,8 +211,8 @@ class SetChild(Expression):
         return xml
 
     def arguments(self):
-        return [self.xml_expr, self.child_tag, self.child_value] + ([self.child_index] if self.child_index else [])
-    
+        return [self.xml_expr, self.child_value] + ([self.child_index] if self.child_index else [])
+
 class XMLVariable(Expression):
     return_type = "xml"
     argument_types = []
@@ -325,111 +322,111 @@ class SetText(Expression):
     def arguments(self):
         return [self.xml_expr, self.text_value]
 
-# def test_evaluation(verbose=False):
-#     expressions, ground_truth = [], []
+def test_evaluation(verbose=False):
+    expressions, ground_truth = [], []
 
-#     # Test creating a simple XML tag
-#     expressions.append(XMLTag(
-#         ConstantString("root"),
-#         [(ConstantString("key"), ConstantString("value"))],
-#         None,
-#         None
-#     ))
-#     ground_truth.append(lambda: {
-#         "tag": "root",
-#         "attributes": {"key": "value"},
-#         "text": None,
-#         "children": []
-#     })
+    # Test creating a simple XML tag
+    expressions.append(XMLTag(
+        ConstantString("root"),
+        [(ConstantString("key"), ConstantString("value"))],
+        None,
+        None
+    ))
+    ground_truth.append(lambda: {
+        "tag": "root",
+        "attributes": {"key": "value"},
+        "text": None,
+        "children": []
+    })
 
-#     # Test extracting an attribute
-#     expressions.append(ExtractAttribute(
-#         XMLTag(
-#             ConstantString("root"),
-#             [(ConstantString("key"), ConstantString("value"))],
-#             None,
-#             None
-#         ),
-#         ConstantString("key")
-#     ))
-#     ground_truth.append(lambda: "value")
+    # Test extracting an attribute
+    expressions.append(ExtractAttribute(
+        XMLTag(
+            ConstantString("root"),
+            [(ConstantString("key"), ConstantString("value"))],
+            None,
+            None
+        ),
+        ConstantString("key")
+    ))
+    ground_truth.append(lambda: "value")
 
-#     # Test setting an attribute
-#     expressions.append(SetAttribute(
-#         XMLTag(
-#             ConstantString("root"),
-#             [],
-#             None,
-#             None
-#         ),
-#         ConstantString("key"),
-#         ConstantString("new_value")
-#     ))
-#     ground_truth.append(lambda: {
-#         "tag": "root",
-#         "attributes": {"key": "new_value"},
-#         "text": None,
-#         "children": []
-#     })
+    # Test setting an attribute
+    expressions.append(SetAttribute(
+        XMLTag(
+            ConstantString("root"),
+            [],
+            None,
+            None
+        ),
+        ConstantString("key"),
+        ConstantString("new_value")
+    ))
+    ground_truth.append(lambda: {
+        "tag": "root",
+        "attributes": {"key": "new_value"},
+        "text": None,
+        "children": []
+    })
 
-#     # Test extracting a child
-#     expressions.append(ExtractChild(
-#         XMLTag(
-#             ConstantString("root"),
-#             [],
-#             None,
-#             [
-#                 XMLTag(ConstantString("child"), None, None, None)
-#             ]
-#         ),
-#         ConstantString("child")
-#     ))
-#     ground_truth.append(lambda: {
-#         "tag": "child",
-#         "attributes": {},
-#         "text": None,
-#         "children": []
-#     })
+    # Test extracting a child
+    expressions.append(ExtractChild(
+        XMLTag(
+            ConstantString("root"),
+            [],
+            None,
+            [
+                XMLTag(ConstantString("child"), None, None, None)
+            ]
+        ),
+        ConstantString("child")
+    ))
+    ground_truth.append(lambda: {
+        "tag": "child",
+        "attributes": {},
+        "text": None,
+        "children": []
+    })
 
-#     # Test setting a child
-#     expressions.append(SetChild(
-#         XMLTag(
-#             ConstantString("root"),
-#             [],
-#             None,
-#             []
-#         ),
-#         ConstantString("child"),
-#         XMLTag(ConstantString("child"), None, ConstantString("child text"), None)
-#     ))
-#     ground_truth.append(lambda: {
-#         "tag": "root",
-#         "attributes": {},
-#         "text": None,
-#         "children": [{
-#             "tag": "child",
-#             "attributes": {},
-#             "text": "child text",
-#             "children": []
-#         }]
-#     })
+    # Test setting a child
+    expressions.append(SetChild(
+        XMLTag(
+            ConstantString("root"),
+            [],
+            None,
+            []
+        ),
+        ConstantString("child"),
+        XMLTag(ConstantString("child"), None, ConstantString("child text"), None)
+    ))
+    ground_truth.append(lambda: {
+        "tag": "root",
+        "attributes": {},
+        "text": None,
+        "children": [{
+            "tag": "child",
+            "attributes": {},
+            "text": "child text",
+            "children": []
+        }]
+    })
 
-#     all_correct, num_correct = True, 0
-#     for expression, correct_semantics in zip(expressions, ground_truth):
-#         result = expression.evaluate({})
-#         expected = correct_semantics()
-#         if result != expected:
-#             if verbose:
-#                 print("Problem with evaluation for expression:")
-#                 print(expression)
-#                 print(f"Expected: {expected}")
-#                 print(f"Got: {result}")
-#             all_correct = False
-#         else:
-#             num_correct += 1
+    all_correct, num_correct = True, 0
+    for expression, correct_semantics in zip(expressions, ground_truth):
+        result = expression.evaluate({})
+        expected = correct_semantics()
+        if result != expected:
+            if verbose:
+                print("Problem with evaluation for expression:")
+                print(expression)
+                print(f"Expected: {expected}")
+                print(f"Got: {result}")
+            all_correct = False
+        else:
+            num_correct += 1
 
-#     print(f" [+] XML DSL evaluation, +{num_correct}/{len(expressions)} points")
-#     return num_correct
+    print(f" [+] XML DSL evaluation, +{num_correct}/{len(expressions)} points")
+    return num_correct
 
 def xml_to_dsl(xml_string):
     """
@@ -453,8 +450,13 @@ def xml_to_dsl(xml_string):
         # Extract text content
         text = ConstantString(element.text.strip()) if element.text and element.text.strip() else None
         
-        # Recursively parse all child elements
-        children = [parse_element(child) for child in element]
+        # Recursively parse child elements
+        children = None
+        child_elements = list(element)
+        if len(child_elements) == 1:
+            children = parse_element(child_elements[0])
+        elif len(child_elements) > 1:
+            raise ValueError("XMLTag in DSL only supports a single child.")
         
         # Construct and return the XMLTag
         return XMLTag(tag, attributes, text, children)
@@ -463,8 +465,8 @@ def xml_to_dsl(xml_string):
     root_element = ET.fromstring(xml_string)
     parsed_dsl = parse_element(root_element)
     
+    # Capitalize 'none' in the DSL object
     return parsed_dsl
 
-
-# if __name__ == "__main__":
-#     test_evaluation(verbose=True)
+if __name__ == "__main__":
+    test_evaluation(verbose=True)

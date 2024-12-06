@@ -32,14 +32,14 @@ input3 = '''
 
 output3 = '<ownedComment body="This is body d4143d60." />'
 
-test_case_3 = [({"input1": xml_to_dsl(input3)}, xml_to_dsl(output3))]
+# test_case_3 = [({"input1": xml_to_dsl(input3)}, xml_to_dsl(output3))]
 
-# test_case_3 = [
-#     ({"input1": XMLTag(ConstantString("ownedComment"), [], None,
-#                         [XMLTag(ConstantString("body"), [], ConstantString("This is body d4143d60."), [])])}, 
-#     XMLTag(ConstantString("ownedComment"), [(ConstantString("body"), ConstantString("This is body d4143d60."))], None, [])
-#     )
-# ]
+test_case_3 = [
+    ({"input1": XMLTag(ConstantString("ownedComment"), [], None,
+                        [XMLTag(ConstantString("body"), [], ConstantString("This is body d4143d60."), [])])}, 
+    XMLTag(ConstantString("ownedComment"), [(ConstantString("body"), ConstantString("This is body d4143d60."))], None, [])
+    )
+]
 
 input4 = '<ownedComment body="This is body gemonies d4143d60." />'
 

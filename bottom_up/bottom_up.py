@@ -75,13 +75,14 @@ def bottom_up_generator(global_bound, operators, input_outputs):
     expr_by_size_and_type = {}
 
     # Add empty XMLTag structures
-    empty_xml = XMLTag(None, [], None, None)
+    empty_xml = XMLTag(None, [], None, [])
     if ("xml", 1) not in expr_by_size_and_type:
         expr_by_size_and_type[("xml", 1)] = set()
     expr_by_size_and_type[("xml", 1)].add(empty_xml)
 
     # Initialize with variables and terminals
     terminals = variables + at_terminals
+    print(terminals)
     for expr in terminals:
         t = expr.return_type
         if (t, 1) not in expr_by_size_and_type:
@@ -108,7 +109,6 @@ def bottom_up_generator(global_bound, operators, input_outputs):
                     # Generate combinations of arguments for the operator
                     for args in itertools.product(*argument_combinations):
                         expr = operator(*args)
-                        
                         # Evaluate the expression on inputs
                         outputs = tuple(json.dumps(expr.evaluate(input), default=lambda x: x.content if isinstance(x, ConstantString) else x, sort_keys=True) for input, _ in input_outputs)
                         # Add only unique outputs
