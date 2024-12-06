@@ -1,4 +1,3 @@
-
 import inspect
 import itertools
 import json
@@ -30,27 +29,43 @@ def bottom_up_generator(global_bound, operators, input_outputs):
                       for inputs, _ in input_outputs
                       for var_name, var_value in inputs.items()})
     
+    def collect_constant_strings_input(xml, attribute_keys, tags):
+        if xml is None:
+            return
+        # Add tag if it exists
+        if xml.tag:
+            tags.add(xml.tag.content)
+        # Add attributes (both keys and values)
+        attribute_keys.update(attr_key.content for attr_key, _ in value.attributes)
+        # Recurse for child
+        if xml.child:
+            collect_constant_strings_input(xml.child, attribute_keys, tags)
+
+    def collect_constant_strings_output(xml, attribute_keys, tags):
+        if xml is None:
+            return
+        # Add tag if it exists
+        if xml.tag:
+            tags.add(value.tag.content)
+        # Add attributes (both keys and values)
+        attribute_keys.update(attr_value.content for attr_key, attr_value in output.attributes if attr_key.content not in tags)
+        attribute_keys.update(attr_key.content for attr_key, _ in output.attributes)
+        # Recurse for child
+        if xml.child:
+            collect_constant_strings_output(xml.child, attribute_keys, tags)
+    
     # Extract unique attribute keys and tags from input
     attribute_keys = set()
     tags = set()
     for inputs, _ in input_outputs:
         for value in inputs.values():
             if isinstance(value, XMLTag):
-                # Extract attribute keys
-                attribute_keys.update(attr_key.content for attr_key, _ in value.attributes)
-                # Extract tags
-                if value.tag:
-                    tags.add(value.tag.content)
-    
+                collect_constant_strings_input(value, attribute_keys, tags)
+
     # Extract unique attribute keys, values, and tags from output
     for _, output in input_outputs:
         if isinstance(output, XMLTag):
-            # Extract attribute keys and values
-            attribute_keys.update(attr_key.content for attr_key, _ in output.attributes)
-            attribute_keys.update(attr_value.content for _, attr_value in output.attributes)
-            # Extract tags
-            if output.tag:
-                tags.add(output.tag.content)
+            collect_constant_strings_output(value, attribute_keys, tags)
     
     # Create terminals for extracted keys, values, and tags
     attribute_terminals = [ConstantString(key_or_value) for key_or_value in attribute_keys]
@@ -67,6 +82,7 @@ def bottom_up_generator(global_bound, operators, input_outputs):
 
     # Initialize with variables and terminals
     terminals = variables + attribute_terminals + tag_terminals
+    # print(terminals)
     for expr in terminals:
         t = expr.return_type
         if (t, 1) not in expr_by_size_and_type:
