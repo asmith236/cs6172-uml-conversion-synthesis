@@ -5,46 +5,46 @@ The task is to convert an XML element from version 1 to version 2. Below are exa
 Transformation 1:
 
 Input:
-<packagedElement name="expects_cachoeira"></packagedElement>
+<packagedElement name="TempClass1"></packagedElement>
 
 Output:
-<packagedElement name="expects_cachoeira" visibility="public"></packagedElement>
+<packagedElement name="TempClass1" visibility="public"></packagedElement>
 
 Transformation 2:
 
 Input:
 <ownedComment annotatedElement="_383AC7D3023A40C0CE87009D">
-  <body>This is body gemonies d4143d60.</body>
+  <body>This is body d4143d60.</body>
 </ownedComment>
 
 Output:
-<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body gemonies d4143d60." />
+<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body d4143d60." />
 
 Transformation 3:
 
 Input:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira">
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1">
   <ownedComment id="_0-3eYuRbEduVs91jndUPVw" annotatedElement="_383AC7D3023A40C0CE87009D">
     <body>This is body d4143d60.</body>
   </ownedComment>
 </packagedElement>
 
 Output:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira" visibility="public">
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1" visibility="public">
   <ownedComment id="_0-3eYuRbEduVs91jndUPVw" body="This is body d4143d60." annotatedElement="_383AC7D3023A40C0CE87009D" />
 </packagedElement>
 
 Transformation 4:
 
 Input:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira">
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1">
   <eAnnotations id="_0-3eZeRbEduVs91jndUPVw" source="http://www.eclipse.org/uml2/2.0.0/UML">
     <details id="_0-3eZuRbEduVs91jndUPVw" key="entity" />
   </eAnnotations>
 </packagedElement>
 
 Output:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira"></packagedElement>
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1"></packagedElement>
 
 Now, transform the following input XML:
 
@@ -55,8 +55,8 @@ Now, transform the following input XML:
   <ownedComment id="_383AC7D3023A3F097A88029B" annotatedElement="_TYwJQFb6Ed-xTsassymaRA">
     <body>This is body d4128197.</body>
   </ownedComment>
-  <ownedAttribute id="_383AC7D3023A40C0CEBF005E" name="unsteep_commaes" visibility="private" />
-  <ownedAttribute id="_383AC7D3023A40C0CE9C0271" name="polarography_palirrhea"
+  <ownedAttribute id="_383AC7D3023A40C0CEBF005E" name="TempAttrib1" visibility="private" />
+  <ownedAttribute id="_383AC7D3023A40C0CE9C0271" name="TempAttrib2"
     visibility="public" type="_383AC7D3023A40C0CAFC0106" isUnique="false" aggregation="shared"
     association="_383AC7D3023A40C0CE9B034C" />
 </packagedElement>
@@ -70,46 +70,46 @@ The task is to write a program that will always convert an XML element from vers
 Transformation 1:
 
 Input:
-<packagedElement name="expects_cachoeira"></packagedElement>
+<packagedElement name="TempClass1"></packagedElement>
 
 Output:
-<packagedElement name="expects_cachoeira" visibility="public"></packagedElement>
+<packagedElement name="TempClass1" visibility="public"></packagedElement>
 
 Transformation 2:
 
 Input:
 <ownedComment annotatedElement="_383AC7D3023A40C0CE87009D">
-  <body>This is body gemonies d4143d60.</body>
+  <body>This is body d4143d60.</body>
 </ownedComment>
 
 Output:
-<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body gemonies d4143d60." />
+<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body d4143d60." />
 
 Transformation 3:
 
 Input:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira">
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1">
   <ownedComment id="_0-3eYuRbEduVs91jndUPVw" annotatedElement="_383AC7D3023A40C0CE87009D">
     <body>This is body d4143d60.</body>
   </ownedComment>
 </packagedElement>
 
 Output:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira" visibility="public">
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1" visibility="public">
   <ownedComment id="_0-3eYuRbEduVs91jndUPVw" body="This is body d4143d60." annotatedElement="_383AC7D3023A40C0CE87009D" />
 </packagedElement>
 
 Transformation 4:
 
 Input:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira">
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1">
   <eAnnotations id="_0-3eZeRbEduVs91jndUPVw" source="http://www.eclipse.org/uml2/2.0.0/UML">
     <details id="_0-3eZuRbEduVs91jndUPVw" key="entity" />
   </eAnnotations>
 </packagedElement>
 
 Output:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira"></packagedElement>
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1"></packagedElement>
 
 Now, write a program that accepts an input XML element and outputs the transformed element.
 
@@ -121,9 +121,9 @@ Now, write a program that accepts an input XML element and outputs the transform
   <ownedComment id="_383AC7D3023A3F097A88029B" annotatedElement="_TYwJQFb6Ed-xTsassymaRA">
     <body>This is body d4128197.</body>
   </ownedComment>
-  <ownedAttribute id="_383AC7D3023A40C0CEBF005E" name="unsteep_commaes" visibility="private" />
+  <ownedAttribute id="_383AC7D3023A40C0CEBF005E" name="TempAttrib1" visibility="private" />
   <ownedAttribute 
-    id="_383AC7D3023A40C0CE9C0271" name="polarography_palirrhea"
+    id="_383AC7D3023A40C0CE9C0271" name="TempAttrib2"
     visibility="public" type="_383AC7D3023A40C0CAFC0106" isUnique="false" 
     aggregation="shared" association="_383AC7D3023A40C0CE9B034C" />
 </packagedElement>
@@ -190,7 +190,7 @@ Desired Output:
 <ownedComment body="This is body d4143d60."/>
 
 Test case passed!
-Number of programs generated: 278
+Number of programs generated: 244
 
 Synthesized program:
 SetTag(
@@ -208,22 +208,22 @@ SetTag(
     ConstantString('ownedComment')
 )
 
-Execution time: 0.0193 seconds
+Execution time: 0.0176 seconds
 
 ==================================================
 
 Executing test case 4 with size bound 20...
 
 Input:
-<ownedComment body="This is body gemonies d4143d60."/>
+<ownedComment body="This is body d4143d60."/>
 
 Desired Output:
 <ownedComment>
-    <body>This is body gemonies d4143d60.</body>
+    <body>This is body d4143d60.</body>
 </ownedComment>
 
 Test case passed!
-Number of programs generated: 3316
+Number of programs generated: 3184
 
 Synthesized program:
 SetTag(
@@ -248,7 +248,7 @@ SetTag(
     ConstantString('ownedComment')
 )
 
-Execution time: 0.2936 seconds
+Execution time: 0.2797 seconds
 
 ==================================================
 
@@ -267,12 +267,12 @@ Desired Output:
 </packagedElement>
 
 Test case passed!
-Number of programs generated: 252363
+Number of programs generated: 107619
 
 Synthesized program:
 SetChild(
     XMLVariable('input1'),
-    ConstantString('_0-3eYuRbEduVs91jndUPVw'),
+    ConstantString('ownedComment'),
     SetTag(
         SetAttribute(
             XMLTag(
@@ -291,20 +291,20 @@ SetChild(
     )
 )
 
-Execution time: 20.3047 seconds
+Execution time: 8.1288 seconds
 
 ==================================================
 
 Executing test case 6 with size bound 20...
 
 Input:
-<packagedElement name="expects_cachoeira" visibility="public"/>
+<packagedElement name="TempClass1" visibility="public"/>
 
 Desired Output:
-<packagedElement name="expects_cachoeira"/>
+<packagedElement name="TempClass1"/>
 
 Test case passed!
-Number of programs generated: 187
+Number of programs generated: 715
 
 Synthesized program:
 SetTag(
@@ -313,25 +313,28 @@ SetTag(
             None
         ),
         ConstantString('name'),
-        ConstantString('expects_cachoeira')
+        ExtractAttribute(
+            XMLVariable('input1'),
+            ConstantString('name')
+        )
     ),
     ConstantString('packagedElement')
 )
 
-Execution time: 0.0085 seconds
+Execution time: 0.0368 seconds
 
 ==================================================
 
 Executing test case 7 with size bound 20...
 
 Input:
-<packagedElement name="expects_cachoeira"/>
+<packagedElement name="TempClass1"/>
 
 Desired Output:
-<packagedElement name="expects_cachoeira" visibility="public"/>
+<packagedElement name="TempClass1" visibility="public"/>
 
 Test case passed!
-Number of programs generated: 46
+Number of programs generated: 28
 
 Synthesized program:
 SetAttribute(
@@ -340,20 +343,20 @@ SetAttribute(
     ConstantString('public')
 )
 
-Execution time: 0.0015 seconds
+Execution time: 0.0009 seconds
 
 ==================================================
 
 Executing test case 8 with size bound 20...
 
 Input:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira"/>
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1"/>
 
 Desired Output:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira" visibility="public"/>
+<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1" visibility="public"/>
 
 Test case passed!
-Number of programs generated: 97
+Number of programs generated: 57
 
 Synthesized program:
 SetAttribute(
@@ -362,7 +365,7 @@ SetAttribute(
     ConstantString('public')
 )
 
-Execution time: 0.0025 seconds
+Execution time: 0.0014 seconds
 
 ==================================================
 
@@ -370,14 +373,14 @@ Executing test case 9 with size bound 20...
 
 Input:
 <ownedComment annotatedElement="_383AC7D3023A40C0CE87009D">
-    <body>This is body gemonies d4143d60.</body>
+    <body>This is body d4143d60.</body>
 </ownedComment>
 
 Desired Output:
-<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body gemonies d4143d60."/>
+<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body d4143d60."/>
 
 Test case passed!
-Number of programs generated: 21183
+Number of programs generated: 49776
 
 Synthesized program:
 SetTag(
@@ -386,19 +389,22 @@ SetTag(
             XMLTag(
                 None
             ),
-            ConstantString('annotatedElement'),
-            ConstantString('_383AC7D3023A40C0CE87009D')
-        ),
-        ConstantString('body'),
-        ExtractText(
-            ExtractChild(
-                XMLVariable('input1')
+            ConstantString('body'),
+            ExtractText(
+                ExtractChild(
+                    XMLVariable('input1')
+                )
             )
+        ),
+        ConstantString('annotatedElement'),
+        ExtractAttribute(
+            XMLVariable('input1'),
+            ConstantString('annotatedElement')
         )
     ),
     ConstantString('ownedComment')
 )
 
-Execution time: 1.6257 seconds
+Execution time: 4.6116 seconds
 ==================================================
 [+] XML Bottom-Up Synthesis: +9/9 points

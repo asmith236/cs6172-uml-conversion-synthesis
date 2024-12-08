@@ -41,11 +41,11 @@ test_case_3 = [({"input1": xml_to_dsl(input3)}, xml_to_dsl(output3))]
 #     )
 # ]
 
-input4 = '<ownedComment body="This is body gemonies d4143d60." />'
+input4 = '<ownedComment body="This is body d4143d60." />'
 
 output4 = '''
         <ownedComment>
-            <body>This is body gemonies d4143d60.</body>
+            <body>This is body d4143d60.</body>
         </ownedComment>
         '''
 
@@ -84,70 +84,70 @@ test_case_5 = [({"input1": xml_to_dsl(input5)}, xml_to_dsl(output5))]
 
 # more difficult test cases...
 
-input6 = '<packagedElement name="expects_cachoeira" visibility="public"></packagedElement>'
+input6 = '<packagedElement name="TempClass1" visibility="public"></packagedElement>'
 
-output6 = '<packagedElement name="expects_cachoeira"></packagedElement>'
+output6 = '<packagedElement name="TempClass1"></packagedElement>'
 
 test_case_6 = [({"input1": xml_to_dsl(input6)}, xml_to_dsl(output6))]
 
 # test_case_6 = [
-#     ({"input1": XMLTag(ConstantString("packagedElement"), [(ConstantString("name"), ConstantString("expects_cachoeira")), (ConstantString("visibility"), ConstantString("public"))], None, None)}, 
-#     XMLTag(ConstantString("packagedElement"), [(ConstantString("name"), ConstantString("expects_cachoeira"))], None, None)
+#     ({"input1": XMLTag(ConstantString("packagedElement"), [(ConstantString("name"), ConstantString("TempClass1")), (ConstantString("visibility"), ConstantString("public"))], None, None)}, 
+#     XMLTag(ConstantString("packagedElement"), [(ConstantString("name"), ConstantString("TempClass1"))], None, None)
 #     )
 # ]
 
-input7 = '<packagedElement name="expects_cachoeira"></packagedElement>'
+input7 = '<packagedElement name="TempClass1"></packagedElement>'
 
-output7 = '<packagedElement name="expects_cachoeira" visibility="public"></packagedElement>'
+output7 = '<packagedElement name="TempClass1" visibility="public"></packagedElement>'
 
 test_case_7 = [({"input1": xml_to_dsl(input7)}, xml_to_dsl(output7))]
 
 # test_case_7 = [
-#     ({"input1": XMLTag(ConstantString("packagedElement"), [(ConstantString("name"), ConstantString("expects_cachoeira"))], None, None)}, 
-#     XMLTag(ConstantString("packagedElement"), [(ConstantString("name"), ConstantString("expects_cachoeira")), (ConstantString("visibility"), ConstantString("public"))], None, None)
+#     ({"input1": XMLTag(ConstantString("packagedElement"), [(ConstantString("name"), ConstantString("TempClass1"))], None, None)}, 
+#     XMLTag(ConstantString("packagedElement"), [(ConstantString("name"), ConstantString("TempClass1")), (ConstantString("visibility"), ConstantString("public"))], None, None)
 #     )
 # ]
 
-input8 = '<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira"></packagedElement>'
+input8 = '<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1"></packagedElement>'
 
-output8 = '<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira" visibility="public"></packagedElement>'
+output8 = '<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1" visibility="public"></packagedElement>'
 
 test_case_8 = [({"input1": xml_to_dsl(input8)}, xml_to_dsl(output8))]
 
 # test_case_8 = [
-#     ({"input1": XMLTag(ConstantString("packagedElement"), [(ConstantString("type"), ConstantString("uml:Class")), (ConstantString("id"), ConstantString("_383AC7D3023A40C0CE87009D")), (ConstantString("name"), ConstantString("expects_cachoeira"))], None, None)}, 
-#     XMLTag(ConstantString("packagedElement"), [(ConstantString("type"), ConstantString("uml:Class")), (ConstantString("id"), ConstantString("_383AC7D3023A40C0CE87009D")), (ConstantString("name"), ConstantString("expects_cachoeira")), (ConstantString("visibility"), ConstantString("public"))], None, None)
+#     ({"input1": XMLTag(ConstantString("packagedElement"), [(ConstantString("type"), ConstantString("uml:Class")), (ConstantString("id"), ConstantString("_383AC7D3023A40C0CE87009D")), (ConstantString("name"), ConstantString("TempClass1"))], None, None)}, 
+#     XMLTag(ConstantString("packagedElement"), [(ConstantString("type"), ConstantString("uml:Class")), (ConstantString("id"), ConstantString("_383AC7D3023A40C0CE87009D")), (ConstantString("name"), ConstantString("TempClass1")), (ConstantString("visibility"), ConstantString("public"))], None, None)
 #     )
 # ]
 
 input9 = '''
         <ownedComment annotatedElement="_383AC7D3023A40C0CE87009D">
-            <body>This is body gemonies d4143d60.</body>
+            <body>This is body d4143d60.</body>
         </ownedComment>
         '''
 
-output9 = '<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body gemonies d4143d60." />'
+output9 = '<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body d4143d60." />'
 
 test_case_9 = [({"input1": xml_to_dsl(input9)}, xml_to_dsl(output9))]
 
 # test_case_9 = [
 #     ({"input1": XMLTag(ConstantString("ownedComment"), [(ConstantString("annotatedElement"), ConstantString("_383AC7D3023A40C0CE87009D"))], None,
-#                         XMLTag(ConstantString("body"), None, ConstantString("This is body gemonies d4143d60."), None))}, 
-#     XMLTag(ConstantString("ownedComment"), [(ConstantString("annotatedElement"), ConstantString("_383AC7D3023A40C0CE87009D")), (ConstantString("body"), ConstantString("This is body gemonies d4143d60."))], None, None)
+#                         XMLTag(ConstantString("body"), None, ConstantString("This is body d4143d60."), None))}, 
+#     XMLTag(ConstantString("ownedComment"), [(ConstantString("annotatedElement"), ConstantString("_383AC7D3023A40C0CE87009D")), (ConstantString("body"), ConstantString("This is body d4143d60."))], None, None)
 #     )
 # ]
 
 input10 = '''
         <packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D">
             <ownedComment annotatedElement="_383AC7D3023A40C0CE87009D">
-                <body>This is body gemonies d4143d60.</body>
+                <body>This is body d4143d60.</body>
             </ownedComment>
         </packagedElement>
         '''
 
 output10 = '''
         <packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" >
-            <ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body gemonies d4143d60." />
+            <ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body d4143d60." />
         </packagedElement>
         '''
 
@@ -156,73 +156,73 @@ test_case_10 = [({"input1": xml_to_dsl(input10)}, xml_to_dsl(output10))]
 # test_case_11 = [
 #     ({"input1": XMLTag(ConstantString("packagedElement"), [(ConstantString("type"), ConstantString("uml:Class")), (ConstantString("id"), ConstantString("_383AC7D3023A40C0CE87009D"))], None,
 #                       XMLTag(ConstantString("ownedComment"), [(ConstantString("annotatedElement"), ConstantString("annotatedElement"))], None,
-#                               XMLTag(ConstantString("body"), None, ConstantString("This is body gemonies d4143d60."), None)))},
+#                               XMLTag(ConstantString("body"), None, ConstantString("This is body d4143d60."), None)))},
 #      XMLTag(ConstantString("packagedElement"), [(ConstantString("type"), ConstantString("uml:Class")), (ConstantString("id"), ConstantString("_383AC7D3023A40C0CE87009D"))], None,
-#             XMLTag(ConstantString("ownedComment"), [(ConstantString("annotatedElement"), ConstantString("annotatedElement")), (ConstantString("body"), ConstantString("This is body gemonies d4143d60."))], None, None)))
+#             XMLTag(ConstantString("ownedComment"), [(ConstantString("annotatedElement"), ConstantString("annotatedElement")), (ConstantString("body"), ConstantString("This is body d4143d60."))], None, None)))
 # ]
 
-input11 = '<ownedComment id="_0-3eYuRbEduVs91jndUPVw" body="This is body gemonies d4143d60." annotatedElement="_383AC7D3023A40C0CE87009D" />'
+input11 = '<ownedComment id="_0-3eYuRbEduVs91jndUPVw" body="This is body d4143d60." annotatedElement="_383AC7D3023A40C0CE87009D" />'
 
 output11 = '''
         <ownedComment id="_0-3eYuRbEduVs91jndUPVw" annotatedElement="_383AC7D3023A40C0CE87009D">
-            <body>This is body gemonies d4143d60.</body>
+            <body>This is body d4143d60.</body>
         </ownedComment>
         '''
 
 test_case_11 = [({"input1": xml_to_dsl(input11)}, xml_to_dsl(output11))]
 
 # test_case_10 = [
-#     ({"input1": XMLTag(ConstantString("ownedComment"), [(ConstantString("annotatedElement"), ConstantString("_383AC7D3023A40C0CE87009D")), (ConstantString("id"), ConstantString("_0-3eYuRbEduVs91jndUPVw")), (ConstantString("body"), ConstantString("This is body gemonies d4143d60."))], None, None)}, 
+#     ({"input1": XMLTag(ConstantString("ownedComment"), [(ConstantString("annotatedElement"), ConstantString("_383AC7D3023A40C0CE87009D")), (ConstantString("id"), ConstantString("_0-3eYuRbEduVs91jndUPVw")), (ConstantString("body"), ConstantString("This is body d4143d60."))], None, None)}, 
 #     XMLTag(ConstantString("ownedComment"), [(ConstantString("annotatedElement"), ConstantString("_383AC7D3023A40C0CE87009D")), (ConstantString("id"), ConstantString("_0-3eYuRbEduVs91jndUPVw"))], None,
-#                         XMLTag(ConstantString("body"), None, ConstantString("This is body gemonies d4143d60."), None))
+#                         XMLTag(ConstantString("body"), None, ConstantString("This is body d4143d60."), None))
 #     )
 # ]
 
 input12 = '''
-        <packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira">
+        <packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1">
             <ownedComment id="_0-3eYuRbEduVs91jndUPVw" annotatedElement="_383AC7D3023A40C0CE87009D">
-                <body>This is body gemonies d4143d60.</body>
+                <body>This is body d4143d60.</body>
             </ownedComment>
         </packagedElement>
         '''
 
 output12 = '''
-        <packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira" visibility="public">
-            <ownedComment id="_0-3eYuRbEduVs91jndUPVw" body="This is body gemonies d4143d60." annotatedElement="_383AC7D3023A40C0CE87009D" />
+        <packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1" visibility="public">
+            <ownedComment id="_0-3eYuRbEduVs91jndUPVw" body="This is body d4143d60." annotatedElement="_383AC7D3023A40C0CE87009D" />
         </packagedElement>
         '''
 
 test_case_12 = [({"input1": xml_to_dsl(input12)}, xml_to_dsl(output12))]
 
 # test_case_12 = [
-#     ({"input1": XMLTag(ConstantString("packagedElement"), [(ConstantString("type"), ConstantString("uml:Class")), (ConstantString("id"), ConstantString("_383AC7D3023A40C0CE87009D")), (ConstantString("name"), ConstantString("expects_cachoeira"))], None,
+#     ({"input1": XMLTag(ConstantString("packagedElement"), [(ConstantString("type"), ConstantString("uml:Class")), (ConstantString("id"), ConstantString("_383AC7D3023A40C0CE87009D")), (ConstantString("name"), ConstantString("TempClass1"))], None,
 #                       XMLTag(ConstantString("ownedComment"), [(ConstantString("annotatedElement"), ConstantString("annotatedElement")), (ConstantString("id"), ConstantString("_0-3eYuRbEduVs91jndUPVw"))], None,
-#                               XMLTag(ConstantString("body"), None, ConstantString("This is body gemonies d4143d60."), None)))},
-#      XMLTag(ConstantString("packagedElement"), [(ConstantString("type"), ConstantString("uml:Class")), (ConstantString("id"), ConstantString("_383AC7D3023A40C0CE87009D")), (ConstantString("name"), ConstantString("expects_cachoeira"))], None,
-#             XMLTag(ConstantString("ownedComment"), [(ConstantString("annotatedElement"), ConstantString("annotatedElement")), (ConstantString("id"), ConstantString("_0-3eYuRbEduVs91jndUPVw")), (ConstantString("body"), ConstantString("This is body gemonies d4143d60."))], None, None)))
+#                               XMLTag(ConstantString("body"), None, ConstantString("This is body d4143d60."), None)))},
+#      XMLTag(ConstantString("packagedElement"), [(ConstantString("type"), ConstantString("uml:Class")), (ConstantString("id"), ConstantString("_383AC7D3023A40C0CE87009D")), (ConstantString("name"), ConstantString("TempClass1"))], None,
+#             XMLTag(ConstantString("ownedComment"), [(ConstantString("annotatedElement"), ConstantString("annotatedElement")), (ConstantString("id"), ConstantString("_0-3eYuRbEduVs91jndUPVw")), (ConstantString("body"), ConstantString("This is body d4143d60."))], None, None)))
 # ]
 
 # input13 = '''
-#         <packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira">
+#         <packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1">
 #             <eAnnotations id="_0-3eZeRbEduVs91jndUPVw" source="http://www.eclipse.org/uml2/2.0.0/UML">
 #                 <details id="_0-3eZuRbEduVs91jndUPVw" key="entity" />
 #             </eAnnotations>
 #             <ownedComment id="_0-3eYuRbEduVs91jndUPVw" annotatedElement="_383AC7D3023A40C0CE87009D">
-#                 <body>This is body gemonies d4143d60.</body>
+#                 <body>This is body d4143d60.</body>
 #             </ownedComment>
-#             <ownedAttribute id="_383AC7D3023A40C0CEBF005E" name="unsteep_commaes" visibility="private" />
-#             <ownedAttribute id="_383AC7D3023A40C0CE9C0271" name="polarography_palirrhea"
+#             <ownedAttribute id="_383AC7D3023A40C0CEBF005E" name="TempAttrib1" visibility="private" />
+#             <ownedAttribute id="_383AC7D3023A40C0CE9C0271" name="TempAttrib2"
 #                 visibility="public" type="_383AC7D3023A40C0CAFC0106" isUnique="false" aggregation="shared"
 #                 association="_383AC7D3023A40C0CE9B034C" />
 #         </packagedElement>
 #         '''
 
 # output13 = '''
-#         <packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="expects_cachoeira" visibility="public">
-#             <ownedComment id="_0-3eYuRbEduVs91jndUPVw" body="This is body gemonies d4143d60." annotatedElement="_383AC7D3023A40C0CE87009D" />
-#             <ownedAttribute id="_383AC7D3023A40C0CEBF005E" visibility="private" name="unsteep_commaes" />
+#         <packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1" visibility="public">
+#             <ownedComment id="_0-3eYuRbEduVs91jndUPVw" body="This is body d4143d60." annotatedElement="_383AC7D3023A40C0CE87009D" />
+#             <ownedAttribute id="_383AC7D3023A40C0CEBF005E" visibility="private" name="TempAttrib1" />
 #             <ownedAttribute id="_383AC7D3023A40C0CE9C0271" visibility="public"
-#                 name="polarography_palirrhea" isUnique="false" aggregation="shared"
+#                 name="TempAttrib2" isUnique="false" aggregation="shared"
 #                 type="_383AC7D3023A40C0CAFC0106" association="_383AC7D3023A40C0CE9B034C" />
 #         </packagedElement>
 #         '''
@@ -235,7 +235,7 @@ test_case_12 = [({"input1": xml_to_dsl(input12)}, xml_to_dsl(output12))]
 #         [
 #             (ConstantString("type"), ConstantString("uml:Class")), 
 #             (ConstantString("id"), ConstantString("_383AC7D3023A40C0CE87009D")), 
-#             (ConstantString("name"), ConstantString("expects_cachoeira"))
+#             (ConstantString("name"), ConstantString("TempClass1"))
 #         ], 
 #         None,
 #         [
@@ -266,7 +266,7 @@ test_case_12 = [({"input1": xml_to_dsl(input12)}, xml_to_dsl(output12))]
 #                 XMLTag(
 #                     ConstantString("body"), 
 #                     None, 
-#                     ConstantString("This is body gemonies d4143d60."), 
+#                     ConstantString("This is body d4143d60."), 
 #                     None
 #                 )
 #             ),
@@ -274,7 +274,7 @@ test_case_12 = [({"input1": xml_to_dsl(input12)}, xml_to_dsl(output12))]
 #                 ConstantString("ownedAttribute"), 
 #                 [
 #                     (ConstantString("id"), ConstantString("_383AC7D3023A40C0CEBF005E")), 
-#                     (ConstantString("name"), ConstantString("unsteep_commaes")), 
+#                     (ConstantString("name"), ConstantString("TempAttrib1")), 
 #                     (ConstantString("visibility"), ConstantString("private"))
 #                 ], 
 #                 None, 
@@ -284,7 +284,7 @@ test_case_12 = [({"input1": xml_to_dsl(input12)}, xml_to_dsl(output12))]
 #                 ConstantString("ownedAttribute"), 
 #                 [
 #                     (ConstantString("id"), ConstantString("_383AC7D3023A40C0CE9C0271")), 
-#                     (ConstantString("name"), ConstantString("polarography_palirrhea")), 
+#                     (ConstantString("name"), ConstantString("TempAttrib2")), 
 #                     (ConstantString("visibility"), ConstantString("public")), 
 #                     (ConstantString("type"), ConstantString("_383AC7D3023A40C0CAFC0106")), 
 #                     (ConstantString("isUnique"), ConstantString("false")), 
@@ -301,7 +301,7 @@ test_case_12 = [({"input1": xml_to_dsl(input12)}, xml_to_dsl(output12))]
 #         [
 #             (ConstantString("type"), ConstantString("uml:Class")), 
 #             (ConstantString("id"), ConstantString("_383AC7D3023A40C0CE87009D")), 
-#             (ConstantString("name"), ConstantString("expects_cachoeira")), 
+#             (ConstantString("name"), ConstantString("TempClass1")), 
 #             (ConstantString("visibility"), ConstantString("public"))
 #         ], 
 #         None,
@@ -311,7 +311,7 @@ test_case_12 = [({"input1": xml_to_dsl(input12)}, xml_to_dsl(output12))]
 #                 [
 #                     (ConstantString("annotatedElement"), ConstantString("_383AC7D3023A40C0CE87009D")), 
 #                     (ConstantString("id"), ConstantString("_0-3eYuRbEduVs91jndUPVw")), 
-#                     (ConstantString("body"), ConstantString("This is body gemonies d4143d60."))
+#                     (ConstantString("body"), ConstantString("This is body d4143d60."))
 #                 ], 
 #                 None, 
 #                 None
@@ -321,7 +321,7 @@ test_case_12 = [({"input1": xml_to_dsl(input12)}, xml_to_dsl(output12))]
 #                 [
 #                     (ConstantString("id"), ConstantString("_383AC7D3023A40C0CEBF005E")), 
 #                     (ConstantString("visibility"), ConstantString("private")), 
-#                     (ConstantString("name"), ConstantString("unsteep_commaes"))
+#                     (ConstantString("name"), ConstantString("TempAttrib1"))
 #                 ], 
 #                 None, 
 #                 None
@@ -331,7 +331,7 @@ test_case_12 = [({"input1": xml_to_dsl(input12)}, xml_to_dsl(output12))]
 #                 [
 #                     (ConstantString("id"), ConstantString("_383AC7D3023A40C0CE9C0271")), 
 #                     (ConstantString("visibility"), ConstantString("public")), 
-#                     (ConstantString("name"), ConstantString("polarography_palirrhea")), 
+#                     (ConstantString("name"), ConstantString("TempAttrib2")), 
 #                     (ConstantString("isUnique"), ConstantString("false")), 
 #                     (ConstantString("aggregation"), ConstantString("shared")), 
 #                     (ConstantString("type"), ConstantString("_383AC7D3023A40C0CAFC0106")), 

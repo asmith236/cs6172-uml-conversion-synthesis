@@ -36,7 +36,7 @@ def bottom_up_generator(global_bound, operators, input_outputs):
         if xml.tag:
             tags.add(xml.tag.content)
         # Add attributes (both keys and values)
-        attribute_keys.update(attr_key.content for attr_key, _ in value.attributes)
+        attribute_keys.update(attr_key.content for attr_key, _ in xml.attributes)
         # Recurse for child
         if xml.child:
             collect_constant_strings_input(xml.child, attribute_keys, tags)
@@ -46,10 +46,10 @@ def bottom_up_generator(global_bound, operators, input_outputs):
             return
         # Add tag if it exists
         if xml.tag:
-            tags.add(value.tag.content)
+            tags.add(xml.tag.content)
         # Add attributes (both keys and values)
-        attribute_keys.update(attr_value.content for attr_key, attr_value in output.attributes if attr_key.content not in tags)
-        attribute_keys.update(attr_key.content for attr_key, _ in output.attributes)
+        attribute_keys.update(attr_value.content for attr_key, attr_value in xml.attributes if attr_key.content not in tags and attr_key.content not in attribute_keys)
+        attribute_keys.update(attr_key.content for attr_key, _ in xml.attributes)
         # Recurse for child
         if xml.child:
             collect_constant_strings_output(xml.child, attribute_keys, tags)
@@ -65,8 +65,8 @@ def bottom_up_generator(global_bound, operators, input_outputs):
     # Extract unique attribute keys, values, and tags from output
     for _, output in input_outputs:
         if isinstance(output, XMLTag):
-            collect_constant_strings_output(value, attribute_keys, tags)
-    
+            collect_constant_strings_output(output, attribute_keys, tags)
+
     # Create terminals for extracted keys, values, and tags
     attribute_terminals = [ConstantString(key_or_value) for key_or_value in attribute_keys]
     tag_terminals = [ConstantString(tag) for tag in tags]
@@ -82,7 +82,9 @@ def bottom_up_generator(global_bound, operators, input_outputs):
 
     # Initialize with variables and terminals
     terminals = variables + attribute_terminals + tag_terminals
-    # print(terminals)
+    # print("attrib_terminals:", attribute_terminals)
+    # print("tag_terminals:", tag_terminals)
+
     for expr in terminals:
         t = expr.return_type
         if (t, 1) not in expr_by_size_and_type:
@@ -162,7 +164,7 @@ def bottom_up_xml(global_bound, operators, input_outputs):
     expression_count = 0  
 
     # with open("outputs.txt", "w") as o_file: # for debugging
-        # with open("programs.txt", "w") as p_file:
+    #     with open("programs.txt", "w") as p_file:
     for expr in bottom_up_generator(global_bound, operators, input_outputs):
         # p_file.write(f"{expr}\n")
         expression_count += 1 
@@ -191,7 +193,6 @@ def test_bottom_up_xml(verbose=False):
     # test_cases.append((test_case_10, 10))
     # test_cases.append((test_case_11, 11))
     # test_cases.append((test_case_12, 12))
-    # test_cases.append((test_case_13, 13))
     
     # Points for each test case
     how_many_points = [1] * len(test_cases)
