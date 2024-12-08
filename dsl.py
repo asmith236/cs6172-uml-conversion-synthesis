@@ -25,9 +25,6 @@ class Expression():
 
     def __lt__(self, other): return str(self) < str(other)
 
-    def minimum_cost_member_of_extension(self):
-        assert False, "implement"
-
     def version_space_size(self):
         assert False, "implement"
         
@@ -57,13 +54,6 @@ class ConstantString(Expression):
     def version_space_size(self):
         return 1
 
-    def minimum_cost_member_of_extension(self):
-        return self
-    
-    def cost(self):
-        base_cost = 50 # init high cost for constant strings
-        length_penalty = len(self.content) ** 3  # cost increases exponentially w string length
-        return base_cost + length_penalty
 
 class XMLTag(Expression):
     return_type = "xml"
@@ -71,7 +61,7 @@ class XMLTag(Expression):
 
     def __init__(self, tag, attributes, text, child):
         self.tag = tag  # ConstantString or None
-        self.attributes = attributes  # List of (ConstantString, ConstantString)
+        self.attributes = attributes  # list of (ConstantString, ConstantString)
         self.text = text  # ConstantString or None
         self.child = child  # XMLTag or None
 
@@ -224,9 +214,6 @@ class XMLVariable(Expression):
     
     def version_space_size(self):
         return 1
-
-    def minimum_cost_member_of_extension(self):
-        return self
     
 class SetTag(Expression):
     return_type = "xml"
@@ -260,7 +247,7 @@ class ExtractTag(Expression):
 
     def evaluate(self, environment):
         xml = self.xml_expr.evaluate(environment)
-        # Return the tag from the XML structure
+        # return the tag from the XML structure
         return xml.get("tag")
 
     def arguments(self):
@@ -278,7 +265,7 @@ class ExtractText(Expression):
 
     def evaluate(self, environment):
         xml = self.xml_expr.evaluate(environment)
-        # Return the text from the XML structure
+        # return the text from the XML structure
         return xml.get("text")
 
     def arguments(self):
@@ -290,24 +277,104 @@ class SetText(Expression):
 
     def __init__(self, xml_expr, text_value):
         self.xml_expr = xml_expr
-        self.text_value = text_value  # Expected to be a ConstantString or equivalent
+        self.text_value = text_value  # expected to be a ConstantString or equivalent
 
     def __str__(self):
         return f"SetText({self.xml_expr}, {self.text_value})"
 
     def evaluate(self, environment):
-        # Evaluate the XML object and the new text value
+        # eval XML object and new text value
         xml = self.xml_expr.evaluate(environment)
         text_value = self.text_value.evaluate(environment)
-        
-        # Update the text field of the XML
+        # update text field of the XML
         xml["text"] = text_value
-        
-        # Return the updated XML object
         return xml
 
     def arguments(self):
         return [self.xml_expr, self.text_value]
+    
+class RemoveAttribute(Expression):
+    return_type = "xml"
+    argument_types = ["xml", "str"]
+
+    def __init__(self, xml_expr, attr_name):
+        self.xml_expr = xml_expr
+        self.attr_name = attr_name  # expected to be a ConstantString or equivalent
+
+    def __str__(self):
+        return f"RemoveAttribute({self.xml_expr}, {self.attr_name})"
+
+    def evaluate(self, environment):
+        # eval the XML object and attribute name
+        xml = self.xml_expr.evaluate(environment)
+        attr_name = self.attr_name.evaluate(environment)
+        # rm specified attribute
+        if attr_name in xml["attributes"]:
+            del xml["attributes"][attr_name]
+        return xml
+
+    def arguments(self):
+        return [self.xml_expr, self.attr_name]
+
+
+class RemoveTag(Expression):
+    return_type = "xml"
+    argument_types = ["xml"]
+
+    def __init__(self, xml_expr):
+        self.xml_expr = xml_expr
+
+    def __str__(self):
+        return f"RemoveTag({self.xml_expr})"
+
+    def evaluate(self, environment):
+        xml = self.xml_expr.evaluate(environment)
+        # rm tag by setting it to None
+        xml["tag"] = None
+        return xml
+
+    def arguments(self):
+        return [self.xml_expr]
+
+
+class RemoveChild(Expression):
+    return_type = "xml"
+    argument_types = ["xml"]
+
+    def __init__(self, xml_expr):
+        self.xml_expr = xml_expr
+
+    def __str__(self):
+        return f"RemoveChild({self.xml_expr})"
+
+    def evaluate(self, environment):
+        xml = self.xml_expr.evaluate(environment)
+        # rm child by setting it to None
+        xml["children"] = None
+        return xml
+
+    def arguments(self):
+        return [self.xml_expr]
+
+
+class RemoveText(Expression):
+    return_type = "xml"
+    argument_types = ["xml"]
+
+    def __init__(self, xml_expr):
+        self.xml_expr = xml_expr
+
+    def __str__(self):
+        return f"RemoveText({self.xml_expr})"
+
+    def evaluate(self, environment):
+        xml = self.xml_expr.evaluate(environment)
+        # rm text by setting it to None
+        xml["text"] = None
+        return xml
+
+    def arguments(self):
+        return [self.xml_expr]
 
 def test_evaluation(verbose=False):
     expressions, ground_truth = [], []

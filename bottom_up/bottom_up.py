@@ -75,10 +75,10 @@ def bottom_up_generator(global_bound, operators, input_outputs):
     expr_by_size_and_type = {}
 
     # Add empty XMLTag structures
-    empty_xml = XMLTag(None, [], None, None)
-    if ("xml", 1) not in expr_by_size_and_type:
-        expr_by_size_and_type[("xml", 1)] = set()
-    expr_by_size_and_type[("xml", 1)].add(empty_xml)
+    # empty_xml = XMLTag(None, [], None, None)
+    # if ("xml", 1) not in expr_by_size_and_type:
+    #     expr_by_size_and_type[("xml", 1)] = set()
+    # expr_by_size_and_type[("xml", 1)].add(empty_xml)
 
     # Initialize with variables and terminals
     terminals = variables + attribute_terminals + tag_terminals
@@ -122,7 +122,7 @@ def bottom_up_generator(global_bound, operators, input_outputs):
                                 expr_by_size_and_type[(t, size)] = set()
                             expr_by_size_and_type[(t, size)].add(expr)
                             yield expr
-
+    
 def integer_partitions(target_value, number_of_arguments):
     """
     Returns all ways of summing up to `target_value` by adding `number_of_arguments` nonnegative integers
@@ -175,8 +175,13 @@ def bottom_up_xml(global_bound, operators, input_outputs):
     return None, expression_count
 
 def test_bottom_up_xml(verbose=False):
+    # operators = [
+    #     ExtractTag, ExtractAttribute, ExtractText, ExtractChild, SetTag, SetAttribute, SetText, SetChild
+    # ]
     operators = [
-        ExtractTag, ExtractAttribute, ExtractText, ExtractChild, SetTag, SetAttribute, SetText, SetChild
+        ExtractTag, ExtractAttribute, ExtractText, ExtractChild,
+        SetTag, SetAttribute, SetText, SetChild,
+        RemoveAttribute, RemoveTag, RemoveChild, RemoveText
     ]
     
     test_cases = []
@@ -190,7 +195,7 @@ def test_bottom_up_xml(verbose=False):
     test_cases.append((test_case_7, 7))
     test_cases.append((test_case_8, 8))
     test_cases.append((test_case_9, 9))
-    # test_cases.append((test_case_10, 10))
+    test_cases.append((test_case_10, 10))
     # test_cases.append((test_case_11, 11))
     # test_cases.append((test_case_12, 12))
     
