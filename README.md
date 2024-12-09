@@ -294,5 +294,6 @@ SetChild(
 )
 
 Execution time: 64.7667 seconds
+
 ==================================================
 [+] XML Bottom-Up Synthesis: +10/10 points
