@@ -297,26 +297,6 @@ class RemoveAttribute(Expression):
     def arguments(self):
         return [self.xml_expr, self.attr_name]
 
-class RemoveTag(Expression):
-    return_type = "xml"
-    argument_types = ["xml"]
-
-    def __init__(self, xml_expr):
-        self.xml_expr = xml_expr
-
-    def __str__(self):
-        return f"RemoveTag({self.xml_expr})"
-
-    def evaluate(self, environment):
-        xml = self.xml_expr.evaluate(environment)
-        # rm tag by setting it to None
-        xml["tag"] = None
-        return xml
-
-    def arguments(self):
-        return [self.xml_expr]
-
-
 class RemoveChild(Expression):
     return_type = "xml"
     argument_types = ["xml"]
