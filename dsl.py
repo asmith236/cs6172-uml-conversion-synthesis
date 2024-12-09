@@ -1,3 +1,5 @@
+import itertools
+from math import prod
 import xml.etree.ElementTree as ET
 
 class Expression():
@@ -26,8 +28,16 @@ class Expression():
     def __lt__(self, other): return str(self) < str(other)
 
     def version_space_size(self):
-        assert False, "implement"
+        # Composite classes calculate the size based on arguments
+        return 1 if not self.arguments() else prod(arg.version_space_size() for arg in self.arguments())
         
+    def minimum_cost_member_of_extension(self):
+        """
+        Default implementation selects the minimal-cost member from arguments.
+        Override this method for non-composite classes.
+        """
+        return self.__class__(*[arg.minimum_cost_member_of_extension() for arg in self.arguments()])
+
 class ConstantString(Expression):
     return_type = "str"
     argument_types = []
@@ -53,7 +63,9 @@ class ConstantString(Expression):
     
     def version_space_size(self):
         return 1
-
+    
+    def minimum_cost_member_of_extension(self):
+            return self
 
 class XMLTag(Expression):
     return_type = "xml"
@@ -71,7 +83,7 @@ class XMLTag(Expression):
         text = str(self.text) if self.text else "none"
         child = str(self.child) if self.child else "none"
         return f"XMLTag({tag}, {attributes}, {text}, {child})"
-    
+
     def evaluate(self, environment):
         tag = self.tag.evaluate(environment) if self.tag else None
         attributes = {
@@ -86,11 +98,118 @@ class XMLTag(Expression):
             "attributes": attributes,
             "text": text,
             "children": child  # single child or None
-        }
+        }   
 
     def arguments(self):
         args = [self.tag] + (self.attributes or []) + ([self.text] if self.text else []) + ([self.child] if self.child else [])
+        args = [arg for arg in args if arg is not None]
         return args
+    
+    @staticmethod
+    def witness(specification):
+        environment, target_output = specification
+
+        if isinstance(target_output, dict) and "tag" in target_output:
+            # Extract the tag, attributes, text, and children from the target XML
+            tag = target_output["tag"]
+            attributes = target_output.get("attributes", {})
+            text = target_output.get("text", None)
+            children = target_output.get("children", None)
+
+            # Create the tag expression
+            tag_expr = ConstantString(tag) if tag else None
+
+            # Create attribute expressions by iterating over the environment
+            attribute_exprs = []
+            for var, xml in environment.items():
+                for attr, val in attributes.items():
+                    attribute_exprs.append(
+                        SetAttribute(XMLVariable(var), ConstantString(attr), ConstantString(val))
+                    )
+
+            # Create the text expression
+            text_expr = None
+            if text:
+                for var in environment.keys():  # Ensure `var` is defined
+                    text_expr = SetText(XMLVariable(var), ConstantString(text))
+                    break  # Only one `SetText` is needed per target text
+
+            # Create the child expression recursively
+            child_expr = None
+            if children:
+                for var in environment.keys():  # Ensure `var` is defined
+                    child_witness = XMLTag.witness((environment, children))
+                    child_expr = SetChild(
+                        XMLVariable(var),
+                        ConstantString(children["tag"]),
+                        Union.make(child_witness) if isinstance(child_witness, list) else child_witness
+                    )
+                    break  # Only one `SetChild` is needed per target child
+
+            # Return the constructed XMLTag expression
+            return [XMLTag(tag_expr, attribute_exprs, text_expr, child_expr)]
+
+        # If the specification is not valid for an XMLTag, return an empty list
+        return []
+    
+    def version_space_size(self):
+        return prod(arg.version_space_size() for arg in self.arguments())
+    
+    def extension(self):
+        # Generate extensions for the tag, text, and child components
+        tag_ext = self.tag.extension() if self.tag else [None]
+        text_ext = self.text.extension() if self.text else [None]
+        child_ext = self.child.extension() if self.child else [None]
+
+        # Handle attributes as transformation expressions
+        if self.attributes:  # Ensure attributes are iterable expressions
+            attributes_ext = [
+                attr.extension() for attr in self.attributes if isinstance(attr, Expression)
+            ]
+        else:
+            attributes_ext = [[]]  # No attributes
+
+        # Flatten and construct combinations
+        return [
+            XMLTag(tag, list(attributes), text, child)
+            for tag in tag_ext
+            for attributes in itertools.product(*attributes_ext) if attributes_ext
+            for text in text_ext
+            for child in child_ext
+        ]
+    
+    def minimum_cost_member_of_extension(self):
+        """
+        Returns the minimal-cost member of the extension by recursively choosing
+        the minimal-cost member of each component (tag, attributes, text, child).
+        """
+        # Get the minimal-cost member for the tag
+        min_tag = self.tag.minimum_cost_member_of_extension() if self.tag else None
+
+        # Get the minimal-cost members for the attributes
+        min_attributes = []
+        if self.attributes:
+            for attribute in self.attributes:
+                if isinstance(attribute, tuple):
+                    # If it's a tuple, unpack and process
+                    attr_key, attr_value = attribute
+                    min_key = attr_key.minimum_cost_member_of_extension()
+                    min_value = attr_value.minimum_cost_member_of_extension()
+                    min_attributes.append((min_key, min_value))
+                elif isinstance(attribute, Expression):
+                    # If it's an Expression (e.g., SetAttribute), process it directly
+                    min_attributes.append(attribute.minimum_cost_member_of_extension())
+                else:
+                    raise TypeError(f"Unexpected attribute type: {type(attribute)}")
+
+        # Get the minimal-cost member for the text
+        min_text = self.text.minimum_cost_member_of_extension() if self.text else None
+
+        # Get the minimal-cost member for the child
+        min_child = self.child.minimum_cost_member_of_extension() if self.child else None
+
+        # Construct a minimal-cost XMLTag
+        return XMLTag(min_tag, min_attributes, min_text, min_child)
 
 class ExtractAttribute(Expression):
     return_type = "str"
@@ -114,6 +233,27 @@ class ExtractAttribute(Expression):
 
     def arguments(self):
         return [self.xml_expr] + ([self.attr_name] if self.attr_name else [])
+    
+    def version_space_size(self):
+        return prod(arg.version_space_size() for arg in self.arguments())
+    
+    def extension(self):
+        # Generate all combinations of extensions for arguments
+        xml_extensions = self.xml_expr.extension()
+        if self.attr_name:
+            attr_name_extensions = self.attr_name.extension()
+            return [
+                ExtractAttribute(xml, attr_name)
+                for xml in xml_extensions
+                for attr_name in attr_name_extensions
+            ]
+        else:
+            return [ExtractAttribute(xml, None) for xml in xml_extensions]
+        
+    def minimum_cost_member_of_extension(self):
+        min_xml_expr = self.xml_expr.minimum_cost_member_of_extension()
+        min_attr_name = self.attr_name.minimum_cost_member_of_extension() if self.attr_name else None
+        return ExtractAttribute(min_xml_expr, min_attr_name)
 
 class SetAttribute(Expression):
     return_type = "xml"
@@ -137,6 +277,25 @@ class SetAttribute(Expression):
 
     def arguments(self):
         return [self.xml_expr, self.attr_name, self.attr_value]
+    
+    def version_space_size(self):
+        return prod(arg.version_space_size() for arg in self.arguments())
+    
+    def extension(self):
+        # Combine extensions of arguments
+        return [
+            SetAttribute(xml, attr_name, attr_value)
+            for xml in self.xml_expr.extension()
+            for attr_name in self.attr_name.extension()
+            for attr_value in self.attr_value.extension()
+        ]
+    
+    def minimum_cost_member_of_extension(self):
+        return SetAttribute(
+            self.xml_expr.minimum_cost_member_of_extension(),
+            self.attr_name.minimum_cost_member_of_extension(),
+            self.attr_value.minimum_cost_member_of_extension(),
+        )
 
 class ExtractChild(Expression):
     return_type = "xml"
@@ -160,6 +319,17 @@ class ExtractChild(Expression):
 
     def arguments(self):
         return [self.xml_expr]
+    
+    def version_space_size(self):
+        return prod(arg.version_space_size() for arg in self.arguments())
+    
+    def extension(self):
+        # Generate all possible extensions for the XML expression
+        return [ExtractChild(xml) for xml in self.xml_expr.extension()]
+    
+    def minimum_cost_member_of_extension(self):
+        min_xml_expr = self.xml_expr.minimum_cost_member_of_extension()
+        return ExtractChild(min_xml_expr)
 
 class SetChild(Expression):
     return_type = "xml"
@@ -190,6 +360,28 @@ class SetChild(Expression):
     def arguments(self):
         return [self.xml_expr, self.child_tag, self.child_value]
     
+    def version_space_size(self):
+        return prod(arg.version_space_size() for arg in self.arguments())
+    
+    def extension(self):
+        # Generate all combinations of argument extensions
+        xml_extensions = self.xml_expr.extension()
+        child_tag_extensions = self.child_tag.extension()
+        child_value_extensions = self.child_value.extension()
+
+        return [
+            SetChild(xml, child_tag, child_value)
+            for xml in xml_extensions
+            for child_tag in child_tag_extensions
+            for child_value in child_value_extensions
+        ]
+    
+    def minimum_cost_member_of_extension(self):
+        min_xml_expr = self.xml_expr.minimum_cost_member_of_extension()
+        min_child_tag = self.child_tag.minimum_cost_member_of_extension()
+        min_child_value = self.child_value.minimum_cost_member_of_extension()
+        return SetChild(min_xml_expr, min_child_tag, min_child_value)
+    
 class XMLVariable(Expression):
     return_type = "xml"
     argument_types = []
@@ -215,6 +407,9 @@ class XMLVariable(Expression):
     def version_space_size(self):
         return 1
     
+    def minimum_cost_member_of_extension(self):
+        return self
+    
 class SetTag(Expression):
     return_type = "xml"
     argument_types = ["xml", "str"]
@@ -235,6 +430,22 @@ class SetTag(Expression):
     def arguments(self):
         return [self.xml_expr, self.tag_value]
     
+    def version_space_size(self):
+        return prod(arg.version_space_size() for arg in self.arguments())
+    
+    def extension(self):
+        # Combine extensions of arguments
+        return [
+            SetTag(xml, value)
+            for xml in self.xml_expr.extension()
+            for value in self.tag_value.extension()
+        ]
+    
+    def minimum_cost_member_of_extension(self):
+        min_xml_expr = self.xml_expr.minimum_cost_member_of_extension()
+        min_tag_value = self.tag_value.minimum_cost_member_of_extension()
+        return SetTag(min_xml_expr, min_tag_value)
+    
 class ExtractTag(Expression):
     return_type = "str"
     argument_types = ["xml"]
@@ -253,6 +464,17 @@ class ExtractTag(Expression):
     def arguments(self):
         return [self.xml_expr]
     
+    def version_space_size(self):
+        return prod(arg.version_space_size() for arg in self.arguments())
+    
+    def extension(self):
+        # Generate all possible extensions for the XML expression
+        return [ExtractTag(xml) for xml in self.xml_expr.extension()]
+    
+    def minimum_cost_member_of_extension(self):
+        min_xml_expr = self.xml_expr.minimum_cost_member_of_extension()
+        return ExtractTag(min_xml_expr)
+    
 class ExtractText(Expression):
     return_type = "str"
     argument_types = ["xml"]
@@ -270,6 +492,17 @@ class ExtractText(Expression):
 
     def arguments(self):
         return [self.xml_expr]
+    
+    def version_space_size(self):
+        return prod(arg.version_space_size() for arg in self.arguments())
+    
+    def extension(self):
+        # Generate all possible extensions for the XML expression
+        return [ExtractText(xml) for xml in self.xml_expr.extension()]
+    
+    def minimum_cost_member_of_extension(self):
+        min_xml_expr = self.xml_expr.minimum_cost_member_of_extension()
+        return ExtractText(min_xml_expr)
     
 class SetText(Expression):
     return_type = "xml"
@@ -293,6 +526,23 @@ class SetText(Expression):
     def arguments(self):
         return [self.xml_expr, self.text_value]
     
+    def extension(self):
+        # Generate all combinations of argument extensions
+        xml_extensions = self.xml_expr.extension()
+        text_extensions = self.text_value.extension()
+
+        return [
+            SetText(xml, text_value)
+            for xml in xml_extensions
+            for text_value in text_extensions
+        ]
+    
+    def minimum_cost_member_of_extension(self):
+        return SetText(
+            self.xml_expr.minimum_cost_member_of_extension(),
+            self.text_value.minimum_cost_member_of_extension(),
+        )
+
 class RemoveAttribute(Expression):
     return_type = "xml"
     argument_types = ["xml", "str"]
@@ -315,7 +565,23 @@ class RemoveAttribute(Expression):
 
     def arguments(self):
         return [self.xml_expr, self.attr_name]
-
+    
+    def version_space_size(self):
+        return prod(arg.version_space_size() for arg in self.arguments())
+    
+    def extension(self):
+        # Combine extensions of arguments
+        return [
+            RemoveAttribute(xml, attr_name)
+            for xml in self.xml_expr.extension()
+            for attr_name in self.attr_name.extension()
+        ]
+    
+    def minimum_cost_member_of_extension(self):
+        return RemoveAttribute(
+            self.xml_expr.minimum_cost_member_of_extension(),
+            self.attr_name.minimum_cost_member_of_extension(),
+        )
 
 class RemoveTag(Expression):
     return_type = "xml"
@@ -335,7 +601,18 @@ class RemoveTag(Expression):
 
     def arguments(self):
         return [self.xml_expr]
-
+    
+    def version_space_size(self):
+        return prod(arg.version_space_size() for arg in self.arguments())
+    
+    def extension(self):
+        # Generate all possible extensions for the XML expression
+        return [RemoveTag(xml) for xml in self.xml_expr.extension()]
+    
+    def minimum_cost_member_of_extension(self):
+        return RemoveTag(
+            self.xml_expr.minimum_cost_member_of_extension()
+        )
 
 class RemoveChild(Expression):
     return_type = "xml"
@@ -355,7 +632,17 @@ class RemoveChild(Expression):
 
     def arguments(self):
         return [self.xml_expr]
-
+    
+    def version_space_size(self):
+        return prod(arg.version_space_size() for arg in self.arguments())
+    
+    def extension(self):
+        # Generate all possible extensions for the XML expression
+        return [RemoveChild(xml) for xml in self.xml_expr.extension()]
+    
+    def minimum_cost_member_of_extension(self):
+        min_xml_expr = self.xml_expr.minimum_cost_member_of_extension()
+        return RemoveChild(min_xml_expr)
 
 class RemoveText(Expression):
     return_type = "xml"
@@ -375,6 +662,73 @@ class RemoveText(Expression):
 
     def arguments(self):
         return [self.xml_expr]
+    
+    def version_space_size(self):
+        return prod(arg.version_space_size() for arg in self.arguments())
+    
+    def extension(self):
+        # Generate all possible extensions for the XML expression
+        return [RemoveText(xml) for xml in self.xml_expr.extension()]
+    
+    def minimum_cost_member_of_extension(self):
+        min_xml_expr = self.xml_expr.minimum_cost_member_of_extension()
+        return RemoveText(min_xml_expr)
+    
+class Union(Expression):
+    def __init__(self, members):
+        self.members = members
+
+    def __str__(self):
+        return 'Union(' + ', '.join([str(m) for m in self.members]) + ')'
+
+    def pretty_print(self):
+        return 'Union(' + ', '.join([m.pretty_print() for m in self.members]) + ')'
+
+    def extension(self):
+        return [
+            expression
+            for member in self.members
+            for expression in member.extension()
+        ]
+
+    def evaluate(self, environment):
+        assert False, "cannot evaluate union"
+
+    @staticmethod
+    def make(members):
+        """
+        Helper function for building unions.
+        Flattens nested unions, ensures members are valid `Expression` instances,
+        and prevents singleton unions.
+        """
+        flat_members = [
+            member
+            for m in members
+            for member in (m.members if isinstance(m, Union) else [m])
+            if isinstance(member, Expression)  # Include only valid Expressions
+        ]
+        if len(flat_members) == 1:
+            return flat_members[0]
+        return Union(flat_members)
+
+    def minimum_cost_member_of_extension(self):
+        # Prioritize transformations based on cost and structural changes
+        return min(
+            [member.minimum_cost_member_of_extension() for member in self.members],
+            key=lambda expression: (expression.cost(), self._structural_change_priority(expression))
+        )
+
+    def _structural_change_priority(self, expression):
+        # Assign higher priority to structural changes like SetChild over RemoveAttribute
+        if isinstance(expression, SetChild):
+            return 0
+        if isinstance(expression, SetAttribute) or isinstance(expression, RemoveAttribute):
+            return 1
+        return 2
+
+
+    def version_space_size(self):
+        return sum(member.version_space_size() for member in self.members)
 
 def test_evaluation(verbose=False):
     expressions, ground_truth = [], []
@@ -524,3 +878,55 @@ def xml_to_dsl(xml_string):
 
 if __name__ == "__main__":
     test_evaluation(verbose=True)
+
+def prettify_expression(expression, indent=0):
+        """
+        Prettifies a nested DSL expression for readable output.
+        """
+        spacing = " " * indent
+        if isinstance(expression, Expression):
+            args = expression.arguments()
+            if args:
+                pretty_args = ",\n".join(prettify_expression(arg, indent + 4) for arg in args)
+                return f"{spacing}{expression.__class__.__name__}(\n{pretty_args}\n{spacing})"
+            elif hasattr(expression, 'content'):  # Handles ConstantString and similar classes
+                return f"{spacing}{expression.__class__.__name__}({repr(expression.content)})"
+            elif hasattr(expression, 'name'):  # Handles XMLVariable and similar classes
+                return f"{spacing}{expression.__class__.__name__}({repr(expression.name)})"
+            else:
+                return f"{spacing}{expression.__class__.__name__}()"
+        elif isinstance(expression, str):
+            return f"{spacing}\"{expression}\""
+        else:
+            return f"{spacing}{str(expression)}"
+
+def dsl_to_pretty_string(xml, indent=0):
+    """
+    Converts an XMLTag to a prettified XML-like string for readable output with proper indentation.
+    """
+    spacing = " " * indent
+    if xml is None:
+        return f"{spacing}<none/>"
+
+    attributes = " ".join([f'{key.content}="{value.content}"' for key, value in (xml.attributes or [])])
+    tag = xml.tag.content if xml.tag else "none"
+    text = xml.text.content if xml.text else ""
+    child = dsl_to_pretty_string(xml.child, indent + 4) if xml.child else ""
+    
+    # Format the attributes part
+    opening_tag = f"<{tag} {attributes}".strip()
+    
+    # If there's no child or text, close the tag on the same line
+    if not text and not child:
+        return f"{spacing}{opening_tag}/>"
+    
+    # If there's only text, keep everything on the same line
+    if text and not child:
+        return f"{spacing}{opening_tag}>{text}</{tag}>"
+    
+    # If there's a child, properly indent it
+    return (
+        f"{spacing}{opening_tag}>\n"
+        f"{child}\n"
+        f"{spacing}</{tag}>"
+    )

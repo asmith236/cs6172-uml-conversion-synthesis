@@ -709,3 +709,48 @@ SetChild(
 Execution time: 64.7667 seconds
 ==================================================
 [+] XML Bottom-Up Synthesis: +10/10 points
+
+-------------------------------------------------------------------------------
+
+...the only passing flashfill test case
+
+aspensmith@Aspens-MacBook-Pro-2 flashfill % python3 flashfill.py
+
+==================================================
+
+Executing test case 11...
+
+Input:
+<ownedComment id="_0-3eYuRbEduVs91jndUPVw" body="This is body d4143d60." annotatedElement="_383AC7D3023A40C0CE87009D"/>
+
+Desired Output:
+<ownedComment id="_0-3eYuRbEduVs91jndUPVw" annotatedElement="_383AC7D3023A40C0CE87009D">
+    <body>This is body d4143d60.</body>
+</ownedComment>
+
+Ran Synthesizer in Time: 0.0001 seconds
+Version Space Size: 2
+
+Verifying everything in version space satisfies input-outputs...
+Test case passed!
+
+Synthesized program:
+XMLTag(
+    RemoveAttribute(
+        XMLVariable('input1'),
+        ConstantString('body')
+    ),
+    SetChild(
+        XMLVariable('input1'),
+        ConstantString('body'),
+        XMLTag(
+            ConstantString('body'),
+            SetText(
+                XMLVariable('input1'),
+                ConstantString('This is body d4143d60.')
+            )
+        )
+    )
+)
+
+==================================================

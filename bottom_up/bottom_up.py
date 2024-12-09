@@ -74,12 +74,6 @@ def bottom_up_generator(global_bound, operators, input_outputs):
     # Initialize expressions by size and type
     expr_by_size_and_type = {}
 
-    # Add empty XMLTag structures
-    # empty_xml = XMLTag(None, [], None, None)
-    # if ("xml", 1) not in expr_by_size_and_type:
-    #     expr_by_size_and_type[("xml", 1)] = set()
-    # expr_by_size_and_type[("xml", 1)].add(empty_xml)
-
     # Initialize with variables and terminals
     terminals = variables + attribute_terminals + tag_terminals
     # print("attrib_terminals:", attribute_terminals)
@@ -175,9 +169,6 @@ def bottom_up_xml(global_bound, operators, input_outputs):
     return None, expression_count
 
 def test_bottom_up_xml(verbose=False):
-    # operators = [
-    #     ExtractTag, ExtractAttribute, ExtractText, ExtractChild, SetTag, SetAttribute, SetText, SetChild
-    # ]
     operators = [
         ExtractTag, ExtractAttribute, ExtractText, ExtractChild,
         SetTag, SetAttribute, SetText, SetChild,
@@ -203,71 +194,18 @@ def test_bottom_up_xml(verbose=False):
     how_many_points = [1] * len(test_cases)
 
     # Optimal sizes for each test case
-    # optimal_sizes = [20, 20, 20, 20, 20, 20, 20, 30]
     optimal_sizes = [20] * len(test_cases)
 
     total_points = 0
     
-    def prettify_expression(expression, indent=0):
-        """
-        Prettifies a nested DSL expression for readable output.
-        """
-        spacing = " " * indent
-        if isinstance(expression, Expression):
-            args = expression.arguments()
-            if args:
-                pretty_args = ",\n".join(prettify_expression(arg, indent + 4) for arg in args)
-                return f"{spacing}{expression.__class__.__name__}(\n{pretty_args}\n{spacing})"
-            elif hasattr(expression, 'content'):  # Handles ConstantString and similar classes
-                return f"{spacing}{expression.__class__.__name__}({repr(expression.content)})"
-            elif hasattr(expression, 'name'):  # Handles XMLVariable and similar classes
-                return f"{spacing}{expression.__class__.__name__}({repr(expression.name)})"
-            else:
-                return f"{spacing}{expression.__class__.__name__}()"
-        elif isinstance(expression, str):
-            return f"{spacing}\"{expression}\""
-        else:
-            return f"{spacing}{str(expression)}"
-
-    def xml_to_pretty_string(xml, indent=0):
-        """
-        Converts an XMLTag to a prettified XML-like string for readable output with proper indentation.
-        """
-        spacing = " " * indent
-        if xml is None:
-            return f"{spacing}<none/>"
-
-        attributes = " ".join([f'{key.content}="{value.content}"' for key, value in (xml.attributes or [])])
-        tag = xml.tag.content if xml.tag else "none"
-        text = xml.text.content if xml.text else ""
-        child = xml_to_pretty_string(xml.child, indent + 4) if xml.child else ""
-        
-        # Format the attributes part
-        opening_tag = f"<{tag} {attributes}".strip()
-        
-        # If there's no child or text, close the tag on the same line
-        if not text and not child:
-            return f"{spacing}{opening_tag}/>"
-        
-        # If there's only text, keep everything on the same line
-        if text and not child:
-            return f"{spacing}{opening_tag}>{text}</{tag}>"
-        
-        # If there's a child, properly indent it
-        return (
-            f"{spacing}{opening_tag}>\n"
-            f"{child}\n"
-            f"{spacing}</{tag}>"
-        )
-
     for (test_case, case_number), optimal_size, pt in zip(test_cases, optimal_sizes, how_many_points):
         print("\n" + "=" * 50 + "\n")
         print(f"Executing test case {case_number} with size bound {optimal_size}...\n")
         inputs, desired_output = test_case[0]
 
         # Convert input and desired output to prettified XML strings
-        input_xml = xml_to_pretty_string(inputs["input1"])
-        desired_output_xml = xml_to_pretty_string(desired_output)
+        input_xml = dsl_to_pretty_string(inputs["input1"])
+        desired_output_xml = dsl_to_pretty_string(desired_output)
         
         print(f"Input:\n{input_xml}\n")
         print(f"Desired Output:\n{desired_output_xml}\n")
@@ -284,7 +222,7 @@ def test_bottom_up_xml(verbose=False):
         for inputs, expected_output in test_case:
             output = program.evaluate(inputs)
             if output != expected_output.evaluate({}):
-                print(f"Program failed for input {inputs}.\nExpected:\n{xml_to_pretty_string(expected_output)}\nGot:\n{xml_to_pretty_string(output)}")
+                print(f"Program failed for input {inputs}.\nExpected:\n{dsl_to_pretty_string(expected_output)}\nGot:\n{dsl_to_pretty_string(output)}")
                 fails_test_case = True
             else:
                 print(f"Test case passed!")
