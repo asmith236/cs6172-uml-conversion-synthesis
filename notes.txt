@@ -13,38 +13,38 @@ Output:
 Transformation 2:
 
 Input:
-<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D">
-  <body>This is body d4143d60.</body>
+<ownedComment annotatedElement="_383A">
+  <body>This is body.</body>
 </ownedComment>
 
 Output:
-<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body d4143d60." />
+<ownedComment annotatedElement="_383A" body="This is body." />
 
 Transformation 3:
 
 Input:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1">
-  <ownedComment id="_0-3eYuRbEduVs91jndUPVw" annotatedElement="_383AC7D3023A40C0CE87009D">
-    <body>This is body d4143d60.</body>
+<packagedElement type="uml:Class" id="_383A" name="TempClass1">
+  <ownedComment id="_YuRb" annotatedElement="_383A">
+    <body>This is body.</body>
   </ownedComment>
 </packagedElement>
 
 Output:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1" visibility="public">
-  <ownedComment id="_0-3eYuRbEduVs91jndUPVw" body="This is body d4143d60." annotatedElement="_383AC7D3023A40C0CE87009D" />
+<packagedElement type="uml:Class" id="_383A" name="TempClass1" visibility="public">
+  <ownedComment id="_YuRb" body="This is body." annotatedElement="_383A" />
 </packagedElement>
 
 Transformation 4:
 
 Input:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1">
+<packagedElement type="uml:Class" id="_383A" name="TempClass1">
   <eAnnotations id="_0-3eZeRbEduVs91jndUPVw" source="http://www.eclipse.org/uml2/2.0.0/UML">
     <details id="_0-3eZuRbEduVs91jndUPVw" key="entity" />
   </eAnnotations>
 </packagedElement>
 
 Output:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1"></packagedElement>
+<packagedElement type="uml:Class" id="_383A" name="TempClass1"></packagedElement>
 
 Now, transform the following input XML:
 
@@ -78,38 +78,38 @@ Output:
 Transformation 2:
 
 Input:
-<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D">
-  <body>This is body d4143d60.</body>
+<ownedComment annotatedElement="_383A">
+  <body>This is body.</body>
 </ownedComment>
 
 Output:
-<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body d4143d60." />
+<ownedComment annotatedElement="_383A" body="This is body." />
 
 Transformation 3:
 
 Input:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1">
-  <ownedComment id="_0-3eYuRbEduVs91jndUPVw" annotatedElement="_383AC7D3023A40C0CE87009D">
-    <body>This is body d4143d60.</body>
+<packagedElement type="uml:Class" id="_383A" name="TempClass1">
+  <ownedComment id="_YuRb" annotatedElement="_383A">
+    <body>This is body.</body>
   </ownedComment>
 </packagedElement>
 
 Output:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1" visibility="public">
-  <ownedComment id="_0-3eYuRbEduVs91jndUPVw" body="This is body d4143d60." annotatedElement="_383AC7D3023A40C0CE87009D" />
+<packagedElement type="uml:Class" id="_383A" name="TempClass1" visibility="public">
+  <ownedComment id="_YuRb" body="This is body." annotatedElement="_383A" />
 </packagedElement>
 
 Transformation 4:
 
 Input:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1">
+<packagedElement type="uml:Class" id="_383A" name="TempClass1">
   <eAnnotations id="_0-3eZeRbEduVs91jndUPVw" source="http://www.eclipse.org/uml2/2.0.0/UML">
     <details id="_0-3eZuRbEduVs91jndUPVw" key="entity" />
   </eAnnotations>
 </packagedElement>
 
 Output:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1"></packagedElement>
+<packagedElement type="uml:Class" id="_383A" name="TempClass1"></packagedElement>
 
 Now, write a program that accepts an input XML element and outputs the transformed element.
 
@@ -185,11 +185,11 @@ Executing test case 3 with size bound 20...
 
 Input:
 <ownedComment>
-    <body>This is body d4143d60.</body>
+    <body>This is body.</body>
 </ownedComment>
 
 Desired Output:
-<ownedComment body="This is body d4143d60."/>
+<ownedComment body="This is body."/>
 
 Test case passed!
 Number of programs generated: 244
@@ -217,11 +217,11 @@ Execution time: 0.0176 seconds
 Executing test case 4 with size bound 20...
 
 Input:
-<ownedComment body="This is body d4143d60."/>
+<ownedComment body="This is body."/>
 
 Desired Output:
 <ownedComment>
-    <body>This is body d4143d60.</body>
+    <body>This is body.</body>
 </ownedComment>
 
 Test case passed!
@@ -257,15 +257,15 @@ Execution time: 0.2797 seconds
 Executing test case 5 with size bound 20...
 
 Input:
-<packagedElement id="_0-3eYuRbEduVs91jndUPVw">
+<packagedElement id="_YuRb">
     <ownedComment>
-        <body>This is body d4143d60.</body>
+        <body>This is body.</body>
     </ownedComment>
 </packagedElement>
 
 Desired Output:
-<packagedElement id="_0-3eYuRbEduVs91jndUPVw">
-    <ownedComment body="This is body d4143d60."/>
+<packagedElement id="_YuRb">
+    <ownedComment body="This is body."/>
 </packagedElement>
 
 Test case passed!
@@ -352,10 +352,10 @@ Execution time: 0.0009 seconds
 Executing test case 8 with size bound 20...
 
 Input:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1"/>
+<packagedElement type="uml:Class" id="_383A" name="TempClass1"/>
 
 Desired Output:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1" visibility="public"/>
+<packagedElement type="uml:Class" id="_383A" name="TempClass1" visibility="public"/>
 
 Test case passed!
 Number of programs generated: 57
@@ -374,12 +374,12 @@ Execution time: 0.0014 seconds
 Executing test case 9 with size bound 20...
 
 Input:
-<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D">
-    <body>This is body d4143d60.</body>
+<ownedComment annotatedElement="_383A">
+    <body>This is body.</body>
 </ownedComment>
 
 Desired Output:
-<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body d4143d60."/>
+<ownedComment annotatedElement="_383A" body="This is body."/>
 
 Test case passed!
 Number of programs generated: 49776
@@ -466,11 +466,11 @@ Executing test case 3 with size bound 20...
 
 Input:
 <ownedComment>
-    <body>This is body d4143d60.</body>
+    <body>This is body.</body>
 </ownedComment>
 
 Desired Output:
-<ownedComment body="This is body d4143d60."/>
+<ownedComment body="This is body."/>
 
 Test case passed!
 Number of programs generated: 119
@@ -495,11 +495,11 @@ Execution time: 0.0112 seconds
 Executing test case 4 with size bound 20...
 
 Input:
-<ownedComment body="This is body d4143d60."/>
+<ownedComment body="This is body."/>
 
 Desired Output:
 <ownedComment>
-    <body>This is body d4143d60.</body>
+    <body>This is body.</body>
 </ownedComment>
 
 Test case passed!
@@ -534,15 +534,15 @@ Execution time: 1.0701 seconds
 Executing test case 5 with size bound 20...
 
 Input:
-<packagedElement id="_0-3eYuRbEduVs91jndUPVw">
+<packagedElement id="_YuRb">
     <ownedComment>
-        <body>This is body d4143d60.</body>
+        <body>This is body.</body>
     </ownedComment>
 </packagedElement>
 
 Desired Output:
-<packagedElement id="_0-3eYuRbEduVs91jndUPVw">
-    <ownedComment body="This is body d4143d60."/>
+<packagedElement id="_YuRb">
+    <ownedComment body="This is body."/>
 </packagedElement>
 
 Test case passed!
@@ -619,10 +619,10 @@ Execution time: 0.0008 seconds
 Executing test case 8 with size bound 20...
 
 Input:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1"/>
+<packagedElement type="uml:Class" id="_383A" name="TempClass1"/>
 
 Desired Output:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D" name="TempClass1" visibility="public"/>
+<packagedElement type="uml:Class" id="_383A" name="TempClass1" visibility="public"/>
 
 Test case passed!
 Number of programs generated: 47
@@ -641,12 +641,12 @@ Execution time: 0.0015 seconds
 Executing test case 9 with size bound 20...
 
 Input:
-<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D">
-    <body>This is body d4143d60.</body>
+<ownedComment annotatedElement="_383A">
+    <body>This is body.</body>
 </ownedComment>
 
 Desired Output:
-<ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body d4143d60."/>
+<ownedComment annotatedElement="_383A" body="This is body."/>
 
 Test case passed!
 Number of programs generated: 326
@@ -671,15 +671,15 @@ Execution time: 0.0254 seconds
 Executing test case 10 with size bound 20...
 
 Input:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D">
-    <ownedComment annotatedElement="_383AC7D3023A40C0CE87009D">
-        <body>This is body d4143d60.</body>
+<packagedElement type="uml:Class" id="_383A">
+    <ownedComment annotatedElement="_383A">
+        <body>This is body.</body>
     </ownedComment>
 </packagedElement>
 
 Desired Output:
-<packagedElement type="uml:Class" id="_383AC7D3023A40C0CE87009D">
-    <ownedComment annotatedElement="_383AC7D3023A40C0CE87009D" body="This is body d4143d60."/>
+<packagedElement type="uml:Class" id="_383A">
+    <ownedComment annotatedElement="_383A" body="This is body."/>
 </packagedElement>
 
 Test case passed!
@@ -709,3 +709,29 @@ SetChild(
 Execution time: 64.7667 seconds
 ==================================================
 [+] XML Bottom-Up Synthesis: +10/10 points
+
+-------------------------------------------------------------------------------
+
+Also, what you have is already enough in the format of "computer science conference paper"---if you want you can use a latex template, but the intention is just that you have an abstract, some related work, and figures illustrating how your system operates and what it outputs.
+
+1. Visual illustrations of your project, such as graphs of experimental results and diagrams showing what you built
+2. Discussion of related work
+3. Make it into a coherent story, rather than a diary of what you did over the semester: The order of content in the paper might be very different from the order in which you did the parts of your project, and there might be parts you choose to not include, such as if they didn't work and yielded no insight
+
+1)	Abstract
+2)	Background
+3)	Discussion of Related Work
+    a.	Performance on LLM?
+    b.	Research related work
+4)  DSL Design
+4)	Establishing Test Cases
+    a.	Diagram of test cases
+5)	Bottom-up Implementation
+    a.	Diagram of system
+6)	Performance Results
+    a.	Table w/ test cases passing and failing
+    b.	Discussion about transform input versus populate empty XMLTag
+        i.	Table with results from both
+7)	Challenges and Moving Forward
+    a.	Modifying the DSL to handle multiple children
+    b.	Attempting Flashfill

@@ -175,9 +175,7 @@ def bottom_up_xml(global_bound, operators, input_outputs):
     return None, expression_count
 
 def test_bottom_up_xml(verbose=False):
-    # operators = [
-    #     ExtractTag, ExtractAttribute, ExtractText, ExtractChild, SetTag, SetAttribute, SetText, SetChild
-    # ]
+    
     operators = [
         ExtractTag, ExtractAttribute, ExtractText, ExtractChild,
         SetTag, SetAttribute, SetText, SetChild,
@@ -196,14 +194,13 @@ def test_bottom_up_xml(verbose=False):
     test_cases.append((test_case_8, 8))
     test_cases.append((test_case_9, 9))
     test_cases.append((test_case_10, 10))
-    # test_cases.append((test_case_11, 11))
-    # test_cases.append((test_case_12, 12))
+    test_cases.append((test_case_11, 11))
+    test_cases.append((test_case_12, 12))
     
     # Points for each test case
     how_many_points = [1] * len(test_cases)
 
     # Optimal sizes for each test case
-    # optimal_sizes = [20, 20, 20, 20, 20, 20, 20, 30]
     optimal_sizes = [20] * len(test_cases)
 
     total_points = 0
