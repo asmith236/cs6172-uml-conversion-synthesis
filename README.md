@@ -3,7 +3,7 @@
 Execute the bottom_up enumerator by executing the following:
 
 ```
-python3 bottom_up/bottom_up.py.
+python3 bottom_up/bottom_up.py
 ```
 
 Below is the bottom_up output when executed on test cases 1-10:
