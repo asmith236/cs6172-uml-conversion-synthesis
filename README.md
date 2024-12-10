@@ -1,6 +1,10 @@
 # CS 6172 UML Conversion Synthesis
 
-Execute the bottom_up enumerator by executing python3 bottom_up/bottom_up.py.
+Execute the bottom_up enumerator by executing the following:
+
+```
+python3 bottom_up/bottom_up.py.
+```
 
 Below is the bottom_up output when executed on test cases 1-10:
 
@@ -19,7 +23,7 @@ Number of programs generated: 9
 
 Synthesized program:
 RemoveAttribute(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('visibility')
 )
 
@@ -40,7 +44,7 @@ Number of programs generated: 14
 
 Synthesized program:
 SetAttribute(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('visibility'),
     ConstantString('public')
 )
@@ -65,12 +69,12 @@ Number of programs generated: 119
 Synthesized program:
 SetAttribute(
     RemoveChild(
-        XMLVariable('input1')
+        XMLVariable('input')
     ),
     ConstantString('body'),
     ExtractText(
         ExtractChild(
-            XMLVariable('input1')
+            XMLVariable('input')
         )
     )
 )
@@ -95,18 +99,18 @@ Number of programs generated: 11574
 Synthesized program:
 SetChild(
     RemoveAttribute(
-        XMLVariable('input1'),
+        XMLVariable('input'),
         ConstantString('body')
     ),
     ConstantString('body'),
     SetTag(
         SetText(
             RemoveAttribute(
-                XMLVariable('input1'),
+                XMLVariable('input'),
                 ConstantString('body')
             ),
             ExtractAttribute(
-                XMLVariable('input1'),
+                XMLVariable('input'),
                 ConstantString('body')
             )
         ),
@@ -137,19 +141,19 @@ Number of programs generated: 85475
 
 Synthesized program:
 SetChild(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('id'),
     SetAttribute(
         RemoveChild(
             ExtractChild(
-                XMLVariable('input1')
+                XMLVariable('input')
             )
         ),
         ConstantString('body'),
         ExtractText(
             ExtractChild(
                 ExtractChild(
-                    XMLVariable('input1')
+                    XMLVariable('input')
                 )
             )
         )
@@ -173,7 +177,7 @@ Number of programs generated: 12
 
 Synthesized program:
 RemoveAttribute(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('visibility')
 )
 
@@ -194,7 +198,7 @@ Number of programs generated: 20
 
 Synthesized program:
 SetAttribute(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('visibility'),
     ConstantString('public')
 )
@@ -216,7 +220,7 @@ Number of programs generated: 47
 
 Synthesized program:
 SetAttribute(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('visibility'),
     ConstantString('public')
 )
@@ -241,12 +245,12 @@ Number of programs generated: 326
 Synthesized program:
 SetAttribute(
     RemoveChild(
-        XMLVariable('input1')
+        XMLVariable('input')
     ),
     ConstantString('body'),
     ExtractText(
         ExtractChild(
-            XMLVariable('input1')
+            XMLVariable('input')
         )
     )
 )
@@ -274,19 +278,19 @@ Number of programs generated: 661855
 
 Synthesized program:
 SetChild(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('id'),
     SetAttribute(
         RemoveChild(
             ExtractChild(
-                XMLVariable('input1')
+                XMLVariable('input')
             )
         ),
         ConstantString('body'),
         ExtractText(
             ExtractChild(
                 ExtractChild(
-                    XMLVariable('input1')
+                    XMLVariable('input')
                 )
             )
         )

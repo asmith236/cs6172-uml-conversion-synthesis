@@ -24,67 +24,59 @@ def bottom_up_generator(global_bound, operators, input_outputs):
     """
     Generates programs in a bottom-up manner using extraction operators.
     """
-    # Extract variables from input
+    # extract vars from input
     variables = list({make_variable(var_name, var_value)
                       for inputs, _ in input_outputs
                       for var_name, var_value in inputs.items()})
     
-    def collect_constant_strings_input(xml, attribute_keys, tags):
+    def collect_constant_strings_env(xml, attribute_keys, tags):
         if xml is None:
             return
-        # Add tag if it exists
+        # add tag if it exists
         if xml.tag:
             tags.add(xml.tag.content)
-        # Add attributes (both keys and values)
+        # add attrib keys
         attribute_keys.update(attr_key.content for attr_key, _ in xml.attributes)
-        # Recurse for child
+        # recurse for child
         if xml.child:
-            collect_constant_strings_input(xml.child, attribute_keys, tags)
+            collect_constant_strings_env(xml.child, attribute_keys, tags)
 
-    def collect_constant_strings_output(xml, attribute_keys, tags):
+    def collect_constant_strings_target(xml, attribute_keys, tags):
         if xml is None:
             return
-        # Add tag if it exists
+        # add tag if it exists
         if xml.tag:
             tags.add(xml.tag.content)
-        # Add attributes (both keys and values)
+        # add attributes constants
         attribute_keys.update(attr_value.content for attr_key, attr_value in xml.attributes if attr_key.content not in tags and attr_key.content not in attribute_keys)
         attribute_keys.update(attr_key.content for attr_key, _ in xml.attributes)
-        # Recurse for child
+        # recurse for child
         if xml.child:
-            collect_constant_strings_output(xml.child, attribute_keys, tags)
+            collect_constant_strings_target(xml.child, attribute_keys, tags)
     
-    # Extract unique attribute keys and tags from input
+    # extract unique attribute keys and tags from input
     attribute_keys = set()
     tags = set()
     for inputs, _ in input_outputs:
         for value in inputs.values():
             if isinstance(value, XMLTag):
-                collect_constant_strings_input(value, attribute_keys, tags)
+                collect_constant_strings_env(value, attribute_keys, tags)
 
-    # Extract unique attribute keys, values, and tags from output
+    # extract unique attribute keys, values, and tags from output
     for _, output in input_outputs:
         if isinstance(output, XMLTag):
-            collect_constant_strings_output(output, attribute_keys, tags)
+            collect_constant_strings_target(output, attribute_keys, tags)
 
-    # Create terminals for extracted keys, values, and tags
+    # create terminals for extracted keys, values, and tags
     attribute_terminals = [ConstantString(key_or_value) for key_or_value in attribute_keys]
     tag_terminals = [ConstantString(tag) for tag in tags]
 
-    # Initialize expressions by size and type
+    # init expressions by size and type
     expr_by_size_and_type = {}
 
-    # Add empty XMLTag structures
-    # empty_xml = XMLTag(None, [], None, None)
-    # if ("xml", 1) not in expr_by_size_and_type:
-    #     expr_by_size_and_type[("xml", 1)] = set()
-    # expr_by_size_and_type[("xml", 1)].add(empty_xml)
-
-    # Initialize with variables and terminals
+    # init with vars and terminals
     terminals = variables + attribute_terminals + tag_terminals
-    # print("attrib_terminals:", attribute_terminals)
-    # print("tag_terminals:", tag_terminals)
-
+    
     for expr in terminals:
         t = expr.return_type
         if (t, 1) not in expr_by_size_and_type:
@@ -101,20 +93,20 @@ def bottom_up_generator(global_bound, operators, input_outputs):
             for partition in partitions:
                 argument_combinations = []
 
-                # Collect arguments matching the operator's types and size partitions
+                # collect args matching the operator's types and size partitions
                 for arg_size, arg_type in zip(partition, operator.argument_types):
                     if (arg_type, arg_size) in expr_by_size_and_type:
                         argument_combinations.append(list(expr_by_size_and_type[(arg_type, arg_size)]))
                     else:
                         break
                 else:
-                    # Generate combinations of arguments for the operator
+                    # gen combinations of arguments for the operator
                     for args in itertools.product(*argument_combinations):
                         expr = operator(*args)
                         
-                        # Evaluate the expression on inputs
+                        # eval the expression on inputs
                         outputs = tuple(json.dumps(expr.evaluate(input), default=lambda x: x.content if isinstance(x, ConstantString) else x, sort_keys=True) for input, _ in input_outputs)
-                        # Add only unique outputs
+                        # add only unique outputs
                         if outputs not in observational_equivalence:
                             observational_equivalence[outputs] = expr
                             t = expr.return_type
@@ -239,18 +231,18 @@ def test_bottom_up_xml(verbose=False):
         text = xml.text.content if xml.text else ""
         child = xml_to_pretty_string(xml.child, indent + 4) if xml.child else ""
         
-        # Format the attributes part
+        # format the attributes part
         opening_tag = f"<{tag} {attributes}".strip()
         
-        # If there's no child or text, close the tag on the same line
+        # if there's no child or text, close the tag on the same line
         if not text and not child:
             return f"{spacing}{opening_tag}/>"
         
-        # If there's only text, keep everything on the same line
+        # if there's only text, keep everything on the same line
         if text and not child:
             return f"{spacing}{opening_tag}>{text}</{tag}>"
         
-        # If there's a child, properly indent it
+        # if there's a child, properly indent it
         return (
             f"{spacing}{opening_tag}>\n"
             f"{child}\n"
@@ -262,21 +254,21 @@ def test_bottom_up_xml(verbose=False):
         print(f"Executing test case {case_number} with size bound {optimal_size}...\n")
         inputs, desired_output = test_case[0]
 
-        # Convert input and desired output to prettified XML strings
-        input_xml = xml_to_pretty_string(inputs["input1"])
+        # convert input and desired output to prettified XML strings
+        input_xml = xml_to_pretty_string(inputs["input"])
         desired_output_xml = xml_to_pretty_string(desired_output)
         
         print(f"Input:\n{input_xml}\n")
         print(f"Desired Output:\n{desired_output_xml}\n")
 
-        # Run the bottom-up generator
+        # run bottom-up generator
         start_time = time.time()
         program, expression_count = bottom_up_xml(optimal_size, operators, test_case)
         if program is None:
             print(f"Failed to synthesize a program.")
             continue
 
-        # Evaluate the program and validate it
+        # eval the program and validate it
         fails_test_case = False
         for inputs, expected_output in test_case:
             output = program.evaluate(inputs)
@@ -289,7 +281,7 @@ def test_bottom_up_xml(verbose=False):
         if fails_test_case:
             continue
 
-        # Prettify and display the synthesized program
+        # prettify and display the synthesized program
         print(f"Number of programs generated: {expression_count}\n")
         print(f"Synthesized program:\n{prettify_expression(program)}\n")
         print(f"Execution time: {time.time() - start_time:.4f} seconds")

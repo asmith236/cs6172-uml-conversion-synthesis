@@ -345,19 +345,19 @@ def xml_to_dsl(xml_string):
         """
         Recursively parses an ElementTree element into a DSL XMLTag.
         """
-        # Extract the tag
+        # extract tag
         tag = ConstantString(element.tag)
         
-        # Extract attributes
+        # extract attribs
         attributes = [
             (ConstantString(k), ConstantString(v))
             for k, v in element.attrib.items()
         ]
         
-        # Extract text content
+        # extract text content
         text = ConstantString(element.text.strip()) if element.text and element.text.strip() else None
         
-        # Recursively parse child elements
+        # recursively parse child elements
         children = None
         child_elements = list(element)
         if len(child_elements) == 1:
@@ -365,14 +365,13 @@ def xml_to_dsl(xml_string):
         elif len(child_elements) > 1:
             raise ValueError("XMLTag in DSL only supports a single child.")
         
-        # Construct and return the XMLTag
+        # construct and return XMLTag
         return XMLTag(tag, attributes, text, children)
     
-    # Parse the XML string
+    # parse XML string
     root_element = ET.fromstring(xml_string)
     parsed_dsl = parse_element(root_element)
     
-    # Capitalize 'none' in the DSL object
     return parsed_dsl
 
 # def test_evaluation(verbose=False):

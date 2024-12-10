@@ -172,7 +172,7 @@ Number of programs generated: 17
 
 Synthesized program:
 SetAttribute(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('visibility'),
     ConstantString('public')
 )
@@ -203,7 +203,7 @@ SetTag(
         ConstantString('body'),
         ExtractText(
             ExtractChild(
-                XMLVariable('input1')
+                XMLVariable('input')
             )
         )
     ),
@@ -240,7 +240,7 @@ SetTag(
                     None
                 ),
                 ExtractAttribute(
-                    XMLVariable('input1'),
+                    XMLVariable('input'),
                     ConstantString('body')
                 )
             ),
@@ -273,7 +273,7 @@ Number of programs generated: 107619
 
 Synthesized program:
 SetChild(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('ownedComment'),
     SetTag(
         SetAttribute(
@@ -284,7 +284,7 @@ SetChild(
             ExtractText(
                 ExtractChild(
                     ExtractChild(
-                        XMLVariable('input1')
+                        XMLVariable('input')
                     )
                 )
             )
@@ -316,7 +316,7 @@ SetTag(
         ),
         ConstantString('name'),
         ExtractAttribute(
-            XMLVariable('input1'),
+            XMLVariable('input'),
             ConstantString('name')
         )
     ),
@@ -340,7 +340,7 @@ Number of programs generated: 28
 
 Synthesized program:
 SetAttribute(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('visibility'),
     ConstantString('public')
 )
@@ -362,7 +362,7 @@ Number of programs generated: 57
 
 Synthesized program:
 SetAttribute(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('visibility'),
     ConstantString('public')
 )
@@ -394,13 +394,13 @@ SetTag(
             ConstantString('body'),
             ExtractText(
                 ExtractChild(
-                    XMLVariable('input1')
+                    XMLVariable('input')
                 )
             )
         ),
         ConstantString('annotatedElement'),
         ExtractAttribute(
-            XMLVariable('input1'),
+            XMLVariable('input'),
             ConstantString('annotatedElement')
         )
     ),
@@ -432,7 +432,7 @@ Number of programs generated: 9
 
 Synthesized program:
 RemoveAttribute(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('visibility')
 )
 
@@ -453,7 +453,7 @@ Number of programs generated: 14
 
 Synthesized program:
 SetAttribute(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('visibility'),
     ConstantString('public')
 )
@@ -478,12 +478,12 @@ Number of programs generated: 119
 Synthesized program:
 SetAttribute(
     RemoveChild(
-        XMLVariable('input1')
+        XMLVariable('input')
     ),
     ConstantString('body'),
     ExtractText(
         ExtractChild(
-            XMLVariable('input1')
+            XMLVariable('input')
         )
     )
 )
@@ -508,18 +508,18 @@ Number of programs generated: 11574
 Synthesized program:
 SetChild(
     RemoveAttribute(
-        XMLVariable('input1'),
+        XMLVariable('input'),
         ConstantString('body')
     ),
     ConstantString('body'),
     SetTag(
         SetText(
             RemoveAttribute(
-                XMLVariable('input1'),
+                XMLVariable('input'),
                 ConstantString('body')
             ),
             ExtractAttribute(
-                XMLVariable('input1'),
+                XMLVariable('input'),
                 ConstantString('body')
             )
         ),
@@ -550,19 +550,19 @@ Number of programs generated: 85475
 
 Synthesized program:
 SetChild(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('id'),
     SetAttribute(
         RemoveChild(
             ExtractChild(
-                XMLVariable('input1')
+                XMLVariable('input')
             )
         ),
         ConstantString('body'),
         ExtractText(
             ExtractChild(
                 ExtractChild(
-                    XMLVariable('input1')
+                    XMLVariable('input')
                 )
             )
         )
@@ -586,7 +586,7 @@ Number of programs generated: 12
 
 Synthesized program:
 RemoveAttribute(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('visibility')
 )
 
@@ -607,7 +607,7 @@ Number of programs generated: 20
 
 Synthesized program:
 SetAttribute(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('visibility'),
     ConstantString('public')
 )
@@ -629,7 +629,7 @@ Number of programs generated: 47
 
 Synthesized program:
 SetAttribute(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('visibility'),
     ConstantString('public')
 )
@@ -654,12 +654,12 @@ Number of programs generated: 326
 Synthesized program:
 SetAttribute(
     RemoveChild(
-        XMLVariable('input1')
+        XMLVariable('input')
     ),
     ConstantString('body'),
     ExtractText(
         ExtractChild(
-            XMLVariable('input1')
+            XMLVariable('input')
         )
     )
 )
@@ -687,19 +687,19 @@ Number of programs generated: 661855
 
 Synthesized program:
 SetChild(
-    XMLVariable('input1'),
+    XMLVariable('input'),
     ConstantString('id'),
     SetAttribute(
         RemoveChild(
             ExtractChild(
-                XMLVariable('input1')
+                XMLVariable('input')
             )
         ),
         ConstantString('body'),
         ExtractText(
             ExtractChild(
                 ExtractChild(
-                    XMLVariable('input1')
+                    XMLVariable('input')
                 )
             )
         )
@@ -710,28 +710,3 @@ Execution time: 64.7667 seconds
 ==================================================
 [+] XML Bottom-Up Synthesis: +10/10 points
 
--------------------------------------------------------------------------------
-
-Also, what you have is already enough in the format of "computer science conference paper"---if you want you can use a latex template, but the intention is just that you have an abstract, some related work, and figures illustrating how your system operates and what it outputs.
-
-1. Visual illustrations of your project, such as graphs of experimental results and diagrams showing what you built
-2. Discussion of related work
-3. Make it into a coherent story, rather than a diary of what you did over the semester: The order of content in the paper might be very different from the order in which you did the parts of your project, and there might be parts you choose to not include, such as if they didn't work and yielded no insight
-
-1)	Abstract
-2)	Background
-3)	Discussion of Related Work
-    a.	Performance on LLM?
-    b.	Research related work
-4)  DSL Design
-4)	Establishing Test Cases
-    a.	Diagram of test cases
-5)	Bottom-up Implementation
-    a.	Diagram of system
-6)	Performance Results
-    a.	Table w/ test cases passing and failing
-    b.	Discussion about transform input versus populate empty XMLTag
-        i.	Table with results from both
-7)	Challenges and Moving Forward
-    a.	Modifying the DSL to handle multiple children
-    b.	Attempting Flashfill
